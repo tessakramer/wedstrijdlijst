@@ -34,5 +34,3 @@ export default async (req) => {
     return new Response('Fout: ' + err.message, { status: 500 });
   }
 };
-
-export const config = { path: '/logo' };

@@ -11,7 +11,6 @@ export default async (req) => {
       `https://www.nederlandsefierljepbond.nl/nw_public_scripts/wedstrijdlijst.php?id_wedstrijd=${parseInt(id)}`
     );
     const html = await response.text();
-
     return new Response(html, {
       status: 200,
       headers: {
@@ -24,5 +23,3 @@ export default async (req) => {
     return new Response('Fout bij ophalen wedstrijddata: ' + err.message, { status: 500 });
   }
 };
-
-export const config = { path: '/proxy' };

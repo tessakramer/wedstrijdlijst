@@ -213,21 +213,40 @@ function isPBH(plaats) {
 
 async function laadKalender() {
   try {
-    const res = await fetch('/kalender');
-    const data = await res.json();
+    const [kalRes, uitRes] = await Promise.all([
+      fetch('/.netlify/functions/kalender?pagina=kalender'),
+      fetch('/.netlify/functions/kalender?pagina=uitslagen'),
+    ]);
+    const [kalenderHtml, uitslagenHtml] = await Promise.all([
+      kalRes.text(),
+      uitRes.text(),
+    ]);
     const wedstrijden = [];
     const gezienIds = new Set();
 
     // Kalender (komende + recente)
-    const kalDoc = new DOMParser().parseFromString(data.kalender, 'text/html');
+    // De kalender-tabel heeft kolommen: nr | datum | tijd | plaats | naam
+    // De link met id_wedstrijd zit in de naam-kolom (laatste td)
+    const kalDoc = new DOMParser().parseFromString(kalenderHtml, 'text/html');
     kalDoc.querySelectorAll('table tr').forEach(tr => {
       const link = tr.querySelector('a[href*="id_wedstrijd"]');
       if (!link) return;
       const match = link.getAttribute('href').match(/id_wedstrijd=(\d+)/);
       if (!match) return;
       const cellen = tr.querySelectorAll('td');
-      const datumRaw = cellen[1]?.textContent.trim() || '';
-      const plaats = cellen[3]?.textContent.trim() || '';
+      if (cellen.length < 4) return;
+      // Zoek de datum-cel: bevat DD-MM-YYYY patroon
+      let datumRaw = '';
+      let plaats = '';
+      cellen.forEach(td => {
+        const t = td.textContent.trim();
+        if (!datumRaw && /\d{2}-\d{2}-\d{4}/.test(t)) datumRaw = t;
+      });
+      // Plaats is de td vóór de naam-td (die de link bevat)
+      const linkTd = link.closest('td');
+      const tds = [...cellen];
+      const linkIdx = tds.indexOf(linkTd);
+      if (linkIdx > 0) plaats = tds[linkIdx - 1].textContent.trim();
       if (!isPBH(plaats)) return;
       const datum = parseNaarISO(datumRaw);
       if (!datum) return;
@@ -237,7 +256,7 @@ async function laadKalender() {
     });
 
     // Uitslagen (gespeeld) — alleen PBH-secties
-    const uitDoc = new DOMParser().parseFromString(data.uitslagen, 'text/html');
+    const uitDoc = new DOMParser().parseFromString(uitslagenHtml, 'text/html');
     let inPBH = false;
     uitDoc.querySelectorAll('h2, table').forEach(el => {
       if (el.tagName === 'H2') {
@@ -246,16 +265,27 @@ async function laadKalender() {
       }
       if (!inPBH || el.tagName !== 'TABLE') return;
       el.querySelectorAll('tr').forEach(tr => {
-        const datumLink = tr.querySelector('td:first-child a[href*="id_wedstrijd"]');
-        const naamLink  = tr.querySelector('td:nth-child(3) a[href*="id_wedstrijd"]');
-        const link = datumLink || naamLink;
+        const link = tr.querySelector('a[href*="id_wedstrijd"]');
         if (!link) return;
         const match = link.getAttribute('href').match(/id_wedstrijd=(\d+)/);
         if (!match || gezienIds.has(match[1])) return;
-        const cellen = tr.querySelectorAll('td');
-        const datumRaw = cellen[0]?.textContent.trim() || '';
-        const plaats   = cellen[1]?.textContent.trim() || '';
-        const naam     = cellen[2]?.querySelector('a')?.textContent.trim() || link.textContent.trim();
+        const cellen = [...tr.querySelectorAll('td')];
+        // Datum-cel: bevat DD-MM-YYYY
+        let datumRaw = '';
+        let plaats = '';
+        let naam = link.textContent.trim();
+        cellen.forEach((td, i) => {
+          const t = td.textContent.trim();
+          if (!datumRaw && /\d{2}-\d{2}-\d{4}/.test(t)) datumRaw = t;
+        });
+        // Plaats is de td na de datum-td
+        const datumIdx = cellen.findIndex(td => /\d{2}-\d{2}-\d{4}/.test(td.textContent.trim()));
+        if (datumIdx !== -1 && cellen[datumIdx + 1]) {
+          plaats = cellen[datumIdx + 1].textContent.trim();
+        }
+        // Naam uit de td die de link bevat
+        const linkTd = link.closest('td');
+        if (linkTd) naam = linkTd.querySelector('a')?.textContent.trim() || naam;
         const datum = parseNaarISO(datumRaw);
         if (!datum) return;
         gezienIds.add(match[1]);
@@ -407,7 +437,7 @@ function toonClubLogo(plaats) {
   const clubSlug = plaats.toLowerCase()
     .replace(/\s+/g, '_')
     .replace(/[^a-z_]/g, '');
-  img.src = `/logo?club=${clubSlug}`;
+  img.src = `/.netlify/functions/logo?club=${clubSlug}`;
   img.alt = plaats;
   img.classList.remove('hidden');
   img.onerror = () => img.classList.add('hidden');
@@ -441,7 +471,7 @@ function laadWedstrijd(id) {
 
 async function fetchEnRender(id) {
   try {
-    const res = await fetch(`/proxy?id_wedstrijd=${id}`);
+    const res = await fetch(`/.netlify/functions/proxy?id_wedstrijd=${id}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const html = await res.text();
     parseEnRender(html);
