@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm --version)",
+      "Bash(which node *)",
+      "Bash(find /usr/local /opt /Applications -name \"node\" -type f 2>/dev/null | head -5)",
+      "Bash(pkill -f \"python3.*server.py\")",
+      "Bash(/opt/homebrew/bin/node /Users/tessa/Documents/hobby-code/wedstrijdlijst-ui/server.js)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(pkill -f \"node.*server.js\")",
+      "WebFetch(domain:www.nederlandsefierljepbond.nl)"
+    ]
+  }
+}

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fierljep — Live Scorebord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f3; --bg2: #ffffff; --bg3: #f0f0ed;
+    --border: rgba(0,0,0,0.07); --border2: rgba(0,0,0,0.13);
+    --text: #1a1a1a; --muted: #888888;
+    --accent: #1d6ef5; --accent2: #1558d0;
+    --accent-subtle: rgba(29,110,245,0.08);
+    --accent-text: #ffffff;
+    --gold: #c47d00; --silver: #607080; --bronze: #9a4400;
+    --pr: #d95a00; --season: #a07800; --nat: #cc2222; --live: #16a34a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border2);
+    padding: 0 2rem; display: flex; align-items: center;
+    height: 56px; position: sticky; top: 0; z-index: 100; gap: 16px;
+  }
+  .logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
+  .logo span { color: var(--accent); }
+  header { transition: background 0.4s; }
+  .live-pill { display: flex; align-items: center; gap: 6px; background: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.35); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 500; color: var(--live); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; flex-shrink: 0; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  .header-controls { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; min-width: 0; }
+
+  /* datum picker */
+  .datum-wrap { position: relative; flex-shrink: 0; }
+  .datum-input {
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
+    padding: 7px 12px; outline: none; transition: border-color 0.15s;
+    cursor: pointer; width: 140px;
+    color-scheme: light;
+  }
+  .datum-input:focus { border-color: var(--accent); }
+
+  /* wedstrijd selector */
+  .wedstrijd-wrap { position: relative; flex: 1; max-width: 380px; min-width: 0; }
+  .wedstrijd-select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 8px; color: var(--text); font-family: 'Barlow', sans-serif;
+    font-size: 13px; padding: 7px 32px 7px 12px; outline: none;
+    transition: border-color 0.15s; cursor: pointer; appearance: none;
+    -webkit-appearance: none;
+  }
+  .wedstrijd-select:focus { border-color: var(--accent); }
+  .wedstrijd-select:disabled { opacity: 0.4; cursor: default; }
+  .wedstrijd-select option { background: #ffffff; }
+  .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 11px; pointer-events: none; }
+
+  .update-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+  /* ── WEDSTRIJD TITLE ── */
+  .wedstrijd-title { background: var(--bg2); border-bottom: 3px solid var(--accent); padding: 10px 2rem; display: none; align-items: center; gap: 14px; transition: border-color 0.4s; }
+  .club-logo { height: 36px; width: auto; max-width: 80px; object-fit: contain; flex-shrink: 0; }
+  .club-logo.hidden { display: none; }
+  .wedstrijd-titel-tekst { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* ── RONDE TABS ── */
+  .ronde-tabs { display: flex; padding: 0 2rem; background: var(--bg2); border-bottom: 1px solid var(--border2); overflow-x: auto; }
+  .ronde-tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; padding: 12px 18px; text-transform: uppercase; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+  .ronde-tab:hover { color: var(--text); }
+  .ronde-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN ── */
+  main { padding: 1.5rem 2rem; }
+  .schansen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+
+  .schans-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .schans-header { background: var(--accent); border-bottom: 1px solid var(--border2); padding: 10px 14px; transition: background 0.4s; }
+  .schans-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); }
+
+  .categorie-block { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .categorie-block:last-child { border-bottom: none; }
+  .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .cat-best { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .cat-best strong { color: var(--gold); font-weight: 500; }
+
+  .springer-table { width: 100%; border-collapse: collapse; }
+  .springer-table thead tr { border-bottom: 1px solid var(--border); }
+  .springer-table thead th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; color: var(--muted); padding: 4px 4px 6px; text-align: center; text-transform: uppercase; }
+  .springer-table thead th.left { text-align: left; }
+  .springer-table tbody tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .springer-table tbody tr:last-child { border-bottom: none; }
+  .springer-table tbody tr:hover { background: rgba(0,0,0,0.025); }
+  .springer-table td { padding: 6px 4px; font-size: 12px; vertical-align: middle; }
+
+  .td-nr { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; width: 22px; }
+  .td-naam { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+  .td-naam.italic { font-style: italic; }
+  .td-afstand { font-family: 'DM Mono', monospace; font-size: 11px; text-align: center; width: 44px; color: var(--muted); }
+  .td-afstand.best { color: var(--accent); font-weight: 500; }
+  .td-afstand.is-pr { color: var(--pr); font-weight: 500; }
+  .td-afstand.is-season { color: var(--season); font-weight: 500; }
+  .td-afstand.is-nat { color: var(--nat); }
+  .td-afstand.is-empty { color: rgba(0,0,0,0.2); }
+  .td-afstand.is-dim { color: rgba(0,0,0,0.3); font-size: 10px; border-right: 1px solid var(--border2); padding-right: 6px; }
+  .springer-table th.dim-header { color: rgba(0,0,0,0.35); font-size: 8px; }
+  .td-ver { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(0,0,0,0.28); text-align: center; width: 28px; white-space: nowrap; border-right: 1px solid var(--border2); }
+  .ver-header { color: rgba(0,0,0,0.28); font-size: 8px; border-right: 1px solid var(--border2); }
+  .td-afstand.last-poging { border-right: 1px solid var(--border2); }
+  .springer-table th.last-poging-header { border-right: 1px solid var(--border2); }
+  .td-stand { text-align: center; width: 28px; }
+  .stand-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; }
+  .stand-1 { background: rgba(196,125,0,0.12); color: var(--gold); }
+  .stand-2 { background: rgba(96,112,128,0.12); color: var(--silver); }
+  .stand-3 { background: rgba(154,68,0,0.12); color: var(--bronze); }
+  .stand-other { color: var(--muted); font-size: 10px; font-family: 'DM Mono', monospace; }
+
+  .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; gap: 12px; }
+  .state-box .icon { font-size: 32px; opacity: 0.3; }
+  .state-box p { color: var(--muted); font-size: 14px; max-width: 360px; line-height: 1.6; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .legenda { display: flex; gap: 20px; flex-wrap: wrap; padding: 1rem 2rem; border-top: 1px solid var(--border); margin-top: 1rem; }
+  .legenda-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .legenda-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  @media (max-width: 700px) {
+    header { padding: 8px 1rem; height: auto; flex-wrap: wrap; gap: 8px; }
+    .header-controls { width: 100%; flex-wrap: wrap; }
+    .wedstrijd-wrap { max-width: 100%; flex: 1 1 100%; }
+    main { padding: 1rem; }
+    .ronde-tabs { padding: 0 1rem; }
+    .wedstrijd-title { padding: 8px 1rem; }
+    .legenda { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Fierljep<span>.</span>live</div>
+  <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+
+  <div class="header-controls">
+    <div class="datum-wrap">
+      <input type="date" class="datum-input" id="datum-input">
+    </div>
+
+    <div class="wedstrijd-wrap">
+      <select class="wedstrijd-select" id="wedstrijd-select" disabled>
+        <option value="">— kies datum —</option>
+      </select>
+      <span class="select-arrow">▾</span>
+    </div>
+
+    <div class="update-time" id="update-time">—</div>
+  </div>
+</header>
+
+<div class="wedstrijd-title" id="wedstrijd-title">
+  <img class="club-logo hidden" id="club-logo" src="" alt="">
+  <span class="wedstrijd-titel-tekst" id="wedstrijd-titel-tekst"></span>
+</div>
+<div class="ronde-tabs" id="ronde-tabs" style="display:none;"></div>
+
+<main id="main">
+  <div class="state-box">
+    <div class="icon">🏅</div>
+    <p>Kalender wordt geladen…</p>
+  </div>
+</main>
+
+<div class="legenda">
+  <div class="legenda-item"><span class="legenda-dot" style="background:var(--pr)"></span>Persoonlijk record</div>
+  <div class="legenda-item"><span class="legenda-dot" style="background:var(--season)"></span>Seizoensrecord</div>
+  <div class="legenda-item"><span class="legenda-dot" style="background:var(--accent);opacity:0.5;"></span>Beste poging</div>
+  <div class="legenda-item"><span class="legenda-dot" style="background:var(--nat)"></span>nat / afg. / b.s.</div>
+</div>
+
+<script>
+const POLL_INTERVAL = 10000;
+const PBH_PLAATSEN = ['linschoten','polsbroekerdam','jaarsveld','vlist','zegveld','kockengen','stichtse vecht','vrienden van de bond','red bull'];
+
+let pollTimer = null;
+let actieveRonde = null;
+let rondenData = {};
+let recordsData = [];
+let alleWedstrijden = []; // { id, naam, datum (YYYY-MM-DD), plaats, bron }
+
+// ─── DATUM HULPFUNCTIES ───────────────────────────────────────────────────────
+
+function vandaagISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function parseNaarISO(str) {
+  // "za 30-05-2026 ..." of "30-05-2026" → "2026-05-30"
+  const m = str.match(/(\d{2})-(\d{2})-(\d{4})/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
+}
+
+function isPBH(plaats) {
+  return PBH_PLAATSEN.some(p => plaats.toLowerCase().includes(p));
+}
+
+// ─── KALENDER LADEN ───────────────────────────────────────────────────────────
+
+async function laadKalender() {
+  try {
+    const res = await fetch('/kalender');
+    const data = await res.json();
+    const wedstrijden = [];
+    const gezienIds = new Set();
+
+    // Kalender (komende + recente)
+    const kalDoc = new DOMParser().parseFromString(data.kalender, 'text/html');
+    kalDoc.querySelectorAll('table tr').forEach(tr => {
+      const link = tr.querySelector('a[href*="id_wedstrijd"]');
+      if (!link) return;
+      const match = link.getAttribute('href').match(/id_wedstrijd=(\d+)/);
+      if (!match) return;
+      const cellen = tr.querySelectorAll('td');
+      const datumRaw = cellen[1]?.textContent.trim() || '';
+      const plaats = cellen[3]?.textContent.trim() || '';
+      if (!isPBH(plaats)) return;
+      const datum = parseNaarISO(datumRaw);
+      if (!datum) return;
+      if (gezienIds.has(match[1])) return;
+      gezienIds.add(match[1]);
+      wedstrijden.push({ id: match[1], naam: link.textContent.trim(), datum, plaats });
+    });
+
+    // Uitslagen (gespeeld) — alleen PBH-secties
+    const uitDoc = new DOMParser().parseFromString(data.uitslagen, 'text/html');
+    let inPBH = false;
+    uitDoc.querySelectorAll('h2, table').forEach(el => {
+      if (el.tagName === 'H2') {
+        inPBH = el.textContent.toLowerCase().includes('pbh');
+        return;
+      }
+      if (!inPBH || el.tagName !== 'TABLE') return;
+      el.querySelectorAll('tr').forEach(tr => {
+        const datumLink = tr.querySelector('td:first-child a[href*="id_wedstrijd"]');
+        const naamLink  = tr.querySelector('td:nth-child(3) a[href*="id_wedstrijd"]');
+        const link = datumLink || naamLink;
+        if (!link) return;
+        const match = link.getAttribute('href').match(/id_wedstrijd=(\d+)/);
+        if (!match || gezienIds.has(match[1])) return;
+        const cellen = tr.querySelectorAll('td');
+        const datumRaw = cellen[0]?.textContent.trim() || '';
+        const plaats   = cellen[1]?.textContent.trim() || '';
+        const naam     = cellen[2]?.querySelector('a')?.textContent.trim() || link.textContent.trim();
+        const datum = parseNaarISO(datumRaw);
+        if (!datum) return;
+        gezienIds.add(match[1]);
+        wedstrijden.push({ id: match[1], naam, datum, plaats });
+      });
+    });
+
+    alleWedstrijden = wedstrijden;
+    initialiseerDatumPicker();
+  } catch (e) {
+    document.getElementById('main').innerHTML =
+      `<div class="state-box"><div class="icon">⚠️</div><p>Kon kalender niet laden: ${e.message}</p></div>`;
+  }
+}
+
+// ─── DATUM PICKER ─────────────────────────────────────────────────────────────
+
+function initialiseerDatumPicker() {
+  const datumInput = document.getElementById('datum-input');
+  const params = new URLSearchParams(window.location.search);
+  const urlDatum = params.get('datum');
+  const urlId    = params.get('id');
+
+  // Stel min/max in op basis van beschikbare wedstrijden
+  const datums = alleWedstrijden.map(w => w.datum).sort();
+  if (datums.length) {
+    datumInput.min = datums[0];
+    datumInput.max = datums[datums.length - 1];
+  }
+
+  // Datum uit URL, anders vandaag of dichtstbijzijnde wedstrijd
+  const vandaag = vandaagISO();
+  if (urlDatum) {
+    datumInput.value = urlDatum;
+  } else {
+    datumInput.value = vindDichtstbijzijndeDatum(vandaag) || vandaag;
+  }
+
+  vulWedstrijdSelector(datumInput.value, urlId);
+
+  datumInput.addEventListener('change', () => {
+    vulWedstrijdSelector(datumInput.value, null);
+  });
+}
+
+function vindDichtstbijzijndeDatum(vandaag) {
+  const datums = [...new Set(alleWedstrijden.map(w => w.datum))].sort();
+  if (!datums.length) return null;
+  // Zoek exacte match of de eerste dag na vandaag
+  const exact = datums.find(d => d === vandaag);
+  if (exact) return exact;
+  const toekomst = datums.find(d => d >= vandaag);
+  if (toekomst) return toekomst;
+  // Geen toekomstige: pak de meest recente
+  return datums[datums.length - 1];
+}
+
+function zetURL(datum, id) {
+  const params = new URLSearchParams();
+  if (datum) params.set('datum', datum);
+  if (id)    params.set('id', id);
+  history.replaceState(null, '', '?' + params.toString());
+}
+
+function vulWedstrijdSelector(datum, voorkeurId) {
+  const select = document.getElementById('wedstrijd-select');
+  const wedstrijdenOpDatum = alleWedstrijden.filter(w => w.datum === datum);
+
+  select.innerHTML = '';
+  clearInterval(pollTimer);
+  actieveRonde = null;
+
+  if (wedstrijdenOpDatum.length === 0) {
+    select.innerHTML = '<option value="">Geen PBH-wedstrijden op deze datum</option>';
+    select.disabled = true;
+    document.getElementById('main').innerHTML =
+      `<div class="state-box"><div class="icon">📅</div><p>Geen PBH-wedstrijden gevonden op ${datum.split('-').reverse().join('-')}.</p></div>`;
+    document.getElementById('wedstrijd-title').style.display = 'none';
+    document.getElementById('ronde-tabs').style.display = 'none';
+    zetURL(datum, null);
+    return;
+  }
+
+  select.disabled = false;
+
+  if (wedstrijdenOpDatum.length === 1) {
+    const w = wedstrijdenOpDatum[0];
+    select.innerHTML = `<option value="${w.id}">${w.naam} — ${w.plaats}</option>`;
+    zetURL(datum, w.id);
+    laadWedstrijd(w.id);
+  } else {
+    select.innerHTML = '<option value="">Kies een wedstrijd…</option>';
+    wedstrijdenOpDatum.forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w.id;
+      opt.textContent = `${w.naam} — ${w.plaats}`;
+      select.appendChild(opt);
+    });
+    // Herstel voorkeur-id uit URL als die op deze datum bestaat
+    const geldig = wedstrijdenOpDatum.find(w => w.id === voorkeurId);
+    if (geldig) {
+      select.value = geldig.id;
+      zetURL(datum, geldig.id);
+      laadWedstrijd(geldig.id);
+    } else {
+      document.getElementById('main').innerHTML =
+        `<div class="state-box"><div class="icon">👆</div><p>Kies een wedstrijd uit de lijst.</p></div>`;
+      document.getElementById('wedstrijd-title').style.display = 'none';
+      document.getElementById('ronde-tabs').style.display = 'none';
+      zetURL(datum, null);
+    }
+  }
+
+  select.onchange = () => {
+    if (select.value) {
+      zetURL(datum, select.value);
+      laadWedstrijd(select.value);
+    }
+  };
+}
+
+// ─── CLUB THEMA ───────────────────────────────────────────────────────────────
+
+const CLUB_THEMAS = {
+  jaarsveld:      { accent: '#f5c800', accent2: '#d4a800', accentText: '#1a1a1a', accentSubtle: 'rgba(245,200,0,0.10)' },
+  vlist:          { accent: '#2d7d3a', accent2: '#1f5e2a', accentText: '#ffffff', accentSubtle: 'rgba(45,125,58,0.10)' },
+  linschoten:     { accent: '#cc1f1f', accent2: '#a81515', accentText: '#ffffff', accentSubtle: 'rgba(204,31,31,0.10)' },
+  polsbroekerdam: { accent: '#1a5fa8', accent2: '#134a87', accentText: '#ffffff', accentSubtle: 'rgba(26,95,168,0.10)' },
+  zegveld:        { accent: '#e07020', accent2: '#c05a10', accentText: '#ffffff', accentSubtle: 'rgba(224,112,32,0.10)' },
+  kockengen:      { accent: '#5a3a8a', accent2: '#43297a', accentText: '#ffffff', accentSubtle: 'rgba(90,58,138,0.10)' },
+};
+
+const STANDAARD_THEMA = { accent: '#1d6ef5', accent2: '#1558d0', accentText: '#ffffff', accentSubtle: 'rgba(29,110,245,0.08)' };
+
+function pasThemaToe(plaats) {
+  const slug = plaats.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z_]/g,'');
+  const thema = CLUB_THEMAS[slug] || STANDAARD_THEMA;
+  const root = document.documentElement;
+  root.style.setProperty('--accent',        thema.accent);
+  root.style.setProperty('--accent2',       thema.accent2);
+  root.style.setProperty('--accent-text',   thema.accentText);
+  root.style.setProperty('--accent-subtle', thema.accentSubtle);
+}
+
+// ─── CLUB LOGO ────────────────────────────────────────────────────────────────
+
+function toonClubLogo(plaats) {
+  const img = document.getElementById('club-logo');
+  const clubSlug = plaats.toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z_]/g, '');
+  img.src = `/logo?club=${clubSlug}`;
+  img.alt = plaats;
+  img.classList.remove('hidden');
+  img.onerror = () => img.classList.add('hidden');
+}
+
+// ─── WEDSTRIJD LADEN ──────────────────────────────────────────────────────────
+
+function isLive(wedstrijd) {
+  if (!wedstrijd) return false;
+  // Live als de wedstrijddatum vandaag of in de toekomst is
+  return wedstrijd.datum >= vandaagISO();
+}
+
+function laadWedstrijd(id) {
+  clearInterval(pollTimer);
+  actieveRonde = null;
+  const wedstrijd = alleWedstrijden.find(w => w.id === id);
+  if (wedstrijd) {
+    pasThemaToe(wedstrijd.plaats);
+    toonClubLogo(wedstrijd.plaats);
+  }
+  toonLaden();
+  fetchEnRender(id);
+  if (isLive(wedstrijd)) {
+    pollTimer = setInterval(() => fetchEnRender(id), POLL_INTERVAL);
+    document.querySelector('.live-pill').style.display = 'flex';
+  } else {
+    document.querySelector('.live-pill').style.display = 'none';
+  }
+}
+
+async function fetchEnRender(id) {
+  try {
+    const res = await fetch(`/proxy?id_wedstrijd=${id}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    parseEnRender(html);
+    document.getElementById('update-time').textContent =
+      'bijgewerkt ' + new Date().toLocaleTimeString('nl-NL', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  } catch (err) {
+    toonFout(err.message);
+  }
+}
+
+function parseEnRender(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const titelEl = doc.querySelector('table td[colspan="3"] center');
+  if (titelEl) {
+    const div = document.getElementById('wedstrijd-title');
+    document.getElementById('wedstrijd-titel-tekst').textContent = titelEl.textContent;
+    div.style.display = 'flex';
+  }
+  const hoofdtabel = doc.querySelector('table[width="100%"][border="1"]');
+  if (!hoofdtabel) { toonFout('Kon wedstrijddata niet lezen.'); return; }
+  rondenData = {};
+  let huidigeRonde = null;
+  hoofdtabel.querySelectorAll('tr').forEach(row => {
+    const rondeCell = row.querySelector('td[colspan="3"][align="center"]');
+    if (rondeCell) {
+      huidigeRonde = rondeCell.textContent.trim();
+      if (!rondenData[huidigeRonde]) rondenData[huidigeRonde] = [];
+      return;
+    }
+    const schansCellen = row.querySelectorAll('td[valign="top"]');
+    if (schansCellen.length > 0 && huidigeRonde) {
+      const schansen = [];
+      schansCellen.forEach(cel => {
+        const d = parseSchans(cel);
+        if (d.length > 0) schansen.push(d);
+      });
+      if (schansen.length > 0) rondenData[huidigeRonde] = schansen;
+    }
+  });
+  // Parse records tabel (onderaan de pagina)
+  recordsData = [];
+  doc.querySelectorAll('tr.pbh_data_kopregel').forEach(row => {
+    const tekst = row.textContent.trim();
+    if (!tekst) return;
+    // Formaat: "Schansrecords: Senioren: 21.56 meter - Dames: ..."
+    const colonIdx = tekst.indexOf(':');
+    if (colonIdx === -1) return;
+    const label = tekst.slice(0, colonIdx).trim();
+    const waarden = tekst.slice(colonIdx + 1).trim();
+    // Split op " - " en parse per categorie
+    const items = waarden.split(' - ').map(s => {
+      const parts = s.split(':');
+      if (parts.length < 2) return null;
+      return { cat: parts[0].trim(), waarde: parts.slice(1).join(':').trim() };
+    }).filter(Boolean);
+    recordsData.push({ label, items });
+  });
+
+  bouwRondeTabs();
+  if (!actieveRonde || !rondenData[actieveRonde]) actieveRonde = Object.keys(rondenData)[0];
+  renderRonde(actieveRonde);
+}
+
+function parseSchans(cel) {
+  const categorieen = [];
+  cel.querySelectorAll('table').forEach(tabel => {
+    const catHeader = tabel.querySelector('td[bgcolor="FAFAD2"] font[color="blue"]');
+    if (!catHeader) return;
+    const springers = [];
+    // Lees kolomheaders om voorronde-kolom te detecteren
+    const headerRij = tabel.querySelector('tr[bgcolor="FAFAD2"]');
+    const kolomHeaders = headerRij
+      ? [...headerRij.querySelectorAll('td')].map(td => td.textContent.trim().toLowerCase())
+      : [];
+    // Kolommen starten na: Nr, (lege td), Naam, Pr. → index 4 in cellen
+    // kolomHeaders[0..1] = Nr, Naam, kolomHeaders[2] = Pr, rest = afstanden + Pl
+    // Zoek welke afstand-kolommen "voorronde" zijn (index relatief aan slice(4))
+    const afstandHeaders = kolomHeaders.slice(3, -1); // skip Nr,naam,pr en Pl
+    const dimIndices = new Set(
+      afstandHeaders.map((h, i) => h.includes('voorronde') ? i : -1).filter(i => i >= 0)
+    );
+
+    tabel.querySelectorAll('tr.tekstklein[height]').forEach((rij) => {
+      const cellen = rij.querySelectorAll('td');
+      if (cellen.length < 4) return;
+      const rugnr = cellen[0].textContent.trim();
+      const naamEl = rij.querySelector('a[class="LINKPBH"]') || rij.querySelector('a');
+      const naamRaw = naamEl ? naamEl.textContent.replace(/\(F\s*\d+\)/g,'').replace(/\s+/g,' ').trim() : '';
+      // Extraheer verenigingsafkorting uit superscript (bijv. " PD", " VL")
+      const supEl = naamEl ? naamEl.querySelector('sup small small') : null;
+      const vereniging = supEl ? supEl.textContent.trim() : '';
+      const naam = naamRaw.replace(vereniging, '').trim();
+      const isItalic = !!rij.querySelector('i');
+      const afstanden = [...cellen].slice(4).map((c, i) => {
+        const tekst = c.textContent.trim();
+        const bg = (c.getAttribute('bgcolor') || '').toUpperCase();
+        let type = 'normaal';
+        if (bg === 'YELLOW') type = 'season';
+        if (bg === '#FF6600' || bg === 'FF6600') type = 'pr';
+        if (['nat','afg.','b.s.'].includes(tekst)) type = 'misslukt';
+        if (!tekst || tekst === '\u00a0') type = 'leeg';
+        const dim = dimIndices.has(i);
+        return { tekst, type, dim };
+      });
+      let besteIdx = -1, besteWaarde = -1;
+      afstanden.forEach((a, i) => {
+        if (i === afstanden.length - 1) return;
+        const v = parseFloat(a.tekst);
+        if (!isNaN(v) && v > besteWaarde) { besteWaarde = v; besteIdx = i; }
+      });
+      springers.push({ nr: rugnr, naam, vereniging, isItalic, pogingen: afstanden.slice(0,-1), besteIdx, beste: besteWaarde > 0 ? besteWaarde.toFixed(2) : null, plaats: cellen[cellen.length-1].textContent.trim() });
+    });
+    if (springers.length > 0) {
+      const naam = catHeader.textContent.trim();
+      // Detecteer groepsnaam: "Senioren Topklasse groep 1" → basisNaam="Senioren Topklasse", groepNr=1
+      const groepMatch = naam.match(/^(.+?)\s+groep\s+(\d+)$/i);
+      categorieen.push({
+        naam,
+        basisNaam: groepMatch ? groepMatch[1].trim() : naam,
+        groepNr: groepMatch ? parseInt(groepMatch[2]) : null,
+        springers,
+      });
+    }
+  });
+
+  // Koppel groepen aan elkaar zodat stand doorloopt, maar groepen blijven apart
+  // Groepeer per basisNaam
+  const groepMap = {};
+  categorieen.forEach(cat => {
+    if (cat.groepNr !== null) {
+      if (!groepMap[cat.basisNaam]) groepMap[cat.basisNaam] = [];
+      groepMap[cat.basisNaam].push(cat);
+    }
+  });
+
+  // Bereken gecombineerde stand per basisNaam (gesorteerd op beste afstand)
+  Object.values(groepMap).forEach(groepen => {
+    // Alle springers van alle groepen samen, rang bepalen
+    const alle = groepen.flatMap(g => g.springers);
+    alle.sort((a, b) => (parseFloat(b.beste) || 0) - (parseFloat(a.beste) || 0));
+    // Ken stand toe per springer op basis van gecombineerde ranking
+    const standMap = {};
+    alle.forEach((s, i) => { standMap[s.nr + s.naam] = String(i + 1); });
+    // Schrijf stand terug per groep (springvolgorde blijft intact)
+    groepen.forEach(g => {
+      g.springers.forEach(s => { s.plaats = standMap[s.nr + s.naam] ?? s.plaats; });
+    });
+  });
+
+  return categorieen;
+}
+
+function bouwRondeTabs() {
+  const tabsEl = document.getElementById('ronde-tabs');
+  tabsEl.innerHTML = '';
+  tabsEl.style.display = 'flex';
+  Object.keys(rondenData).forEach(ronde => {
+    const btn = document.createElement('button');
+    btn.className = 'ronde-tab' + (ronde === actieveRonde ? ' active' : '');
+    btn.textContent = ronde;
+    btn.onclick = () => {
+      actieveRonde = ronde;
+      document.querySelectorAll('.ronde-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRonde(ronde);
+    };
+    tabsEl.appendChild(btn);
+  });
+
+  // Records tab
+  if (recordsData.length > 0) {
+    const btn = document.createElement('button');
+    btn.className = 'ronde-tab' + (actieveRonde === '__records__' ? ' active' : '');
+    btn.textContent = 'Records';
+    btn.onclick = () => {
+      actieveRonde = '__records__';
+      document.querySelectorAll('.ronde-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRecords();
+    };
+    tabsEl.appendChild(btn);
+  }
+}
+
+function renderRecords() {
+  const main = document.getElementById('main');
+
+  // Skip Legenda row (last item)
+  const rijen = recordsData.filter(r => !r.label.toLowerCase().includes('legenda'));
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:16px;max-width:800px;';
+
+  rijen.forEach(rij => {
+    const card = document.createElement('div');
+    card.className = 'schans-card';
+    card.innerHTML = `<div class="schans-header"><span class="schans-title">${rij.label}</span></div>`;
+
+    const tabel = document.createElement('table');
+    tabel.className = 'springer-table';
+    tabel.style.cssText = 'margin:0;';
+    tabel.innerHTML = `<thead><tr>
+      <th class="left">Categorie</th>
+      <th>Afstand</th>
+    </tr></thead>`;
+    const tbody = document.createElement('tbody');
+
+    rij.items.forEach(item => {
+      const tr = document.createElement('tr');
+      // Highlight if it contains "meter" with a meaningful value
+      const match = item.waarde.match(/([\d.]+)\s*meter/);
+      const waarde = match ? match[1] + ' m' : item.waarde;
+      const isNul = waarde.startsWith('0.00');
+      tr.innerHTML = `
+        <td style="color:var(--text);font-size:13px;">${item.cat}</td>
+        <td style="text-align:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:${isNul ? 'var(--muted)' : 'var(--accent)'};">${isNul ? '—' : waarde}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    tabel.appendChild(tbody);
+    const block = document.createElement('div');
+    block.className = 'categorie-block';
+    block.appendChild(tabel);
+    card.appendChild(block);
+    wrap.appendChild(card);
+  });
+
+  main.innerHTML = '';
+  main.appendChild(wrap);
+}
+
+function renderRonde(ronde) {
+  const main = document.getElementById('main');
+  const schansen = rondenData[ronde];
+  if (!schansen?.length) { main.innerHTML = '<div class="state-box"><p>Geen data voor deze ronde.</p></div>'; return; }
+
+  const grid = document.createElement('div');
+  grid.className = 'schansen-grid';
+
+  schansen.forEach((cats, si) => {
+    const card = document.createElement('div');
+    card.className = 'schans-card';
+    card.innerHTML = `<div class="schans-header"><span class="schans-title">Schans ${si+1}</span></div>`;
+
+    cats.forEach(cat => {
+      const block = document.createElement('div');
+      block.className = 'categorie-block';
+      const beste = cat.springers.reduce((b,s) => { const v=parseFloat(s.beste); return (!isNaN(v)&&v>b.v)?{v}:b; }, {v:-1});
+      const n = cat.springers[0]?.pogingen.length || 3;
+      // Genereer kolomlabels; dim-pogingen krijgen label "Vr."
+      const labels = Array.from({length:n},(_,i) => {
+        const p = cat.springers[0]?.pogingen[i];
+        if (p?.dim) return 'Vr.';
+        if (n === 2) return `F${i+1}`;
+        return `P${i+1}`;
+      });
+      const groepSuffix = cat.groepNr !== null
+        ? ` <span style="font-size:10px;font-weight:400;color:var(--muted);font-family:'DM Mono',monospace;">groep ${cat.groepNr}</span>`
+        : '';
+      block.innerHTML = `
+        <div class="cat-header">
+          <span class="cat-label">${cat.basisNaam}${groepSuffix}</span>
+          ${beste.v>0?`<span class="cat-best">Best: <strong>${beste.v.toFixed(2)} m</strong></span>`:''}
+        </div>
+        <table class="springer-table">
+          <thead><tr>
+            <th class="left" style="width:30px">Nr.</th>
+            <th class="left">Naam</th>
+            <th class="ver-header">Ver.</th>
+            ${labels.map((l,li) => {
+              const isLast = li === labels.length - 1;
+              const cls = [l==='Vr.'?'dim-header':'', isLast?'last-poging-header':''].filter(Boolean).join(' ');
+              return `<th${cls?' class="'+cls+'"':''}>${l}</th>`;
+            }).join('')}
+            <th>St.</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>`;
+      const tbody = block.querySelector('tbody');
+      cat.springers.forEach(s => {
+        const tr = document.createElement('tr');
+        const pogs = s.pogingen.map((p,pi) => {
+          let cls='td-afstand';
+          if (pi === s.pogingen.length - 1) cls+=' last-poging';
+          if (p.dim) cls+=' is-dim';
+          else if (pi===s.besteIdx) cls+=' best';
+          if (p.type==='pr') cls+=' is-pr';
+          else if (p.type==='season') cls+=' is-season';
+          else if (p.type==='misslukt') cls+=' is-nat';
+          else if (p.type==='leeg') cls+=' is-empty';
+          return `<td class="${cls}">${p.type==='leeg'?'—':p.tekst}</td>`;
+        }).join('');
+        const pl=parseInt(s.plaats);
+        const stand=!isNaN(pl)?(pl<=3?`<span class="stand-badge stand-${pl}">${pl}</span>`:`<span class="stand-other">${pl}</span>`):`<span class="stand-other">—</span>`;
+        tr.innerHTML=`<td class="td-nr">${s.nr}</td><td class="td-naam${s.isItalic?' italic':''}" title="${s.naam}">${s.naam}</td><td class="td-ver">${s.vereniging||''}</td>${pogs}<td class="td-stand">${stand}</td>`;
+        tbody.appendChild(tr);
+      });
+      card.appendChild(block);
+    });
+
+    grid.appendChild(card);
+  });
+
+  main.innerHTML = '';
+  main.appendChild(grid);
+}
+
+function toonLaden() {
+  document.getElementById('main').innerHTML =
+    `<div class="state-box"><div class="spinner"></div><p>Wedstrijddata ophalen…</p></div>`;
+}
+
+function toonFout(msg) {
+  document.getElementById('main').innerHTML =
+    `<div class="state-box"><div class="icon">⚠️</div><p>Kon data niet laden: ${msg}</p></div>`;
+}
+
+laadKalender();
+</script>
+</body>
+</html>
