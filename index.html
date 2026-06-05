@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fierljep — Live Scorebord</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Oswald:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f5f5f3; --bg2: #ffffff; --bg3: #f0f0ed;
@@ -18,7 +18,7 @@
     --pr: #d95a00; --season: #a07800; --nat: #cc2222; --live: #16a34a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
 
   /* ── HEADER ── */
   header {
@@ -26,7 +26,7 @@
     padding: 0 2rem; display: flex; align-items: center;
     height: 56px; position: sticky; top: 0; z-index: 100; gap: 16px;
   }
-  .logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
+  .logo { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
   .logo span { color: var(--accent); }
   header { transition: background 0.4s; }
   .live-pill { display: flex; align-items: center; gap: 6px; background: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.35); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 500; color: var(--live); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; flex-shrink: 0; }
@@ -50,7 +50,7 @@
   .wedstrijd-wrap { position: relative; flex: 1; max-width: 380px; min-width: 0; }
   .wedstrijd-select {
     width: 100%; background: var(--bg3); border: 1px solid var(--border2);
-    border-radius: 8px; color: var(--text); font-family: 'Barlow', sans-serif;
+    border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif;
     font-size: 13px; padding: 7px 32px 7px 12px; outline: none;
     transition: border-color 0.15s; cursor: pointer; appearance: none;
     -webkit-appearance: none;
@@ -66,11 +66,11 @@
   .wedstrijd-title { background: var(--bg2); border-bottom: 3px solid var(--accent); padding: 10px 2rem; display: none; align-items: center; gap: 14px; transition: border-color 0.4s; }
   .club-logo { height: 36px; width: auto; max-width: 80px; object-fit: contain; flex-shrink: 0; }
   .club-logo.hidden { display: none; }
-  .wedstrijd-titel-tekst { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+  .wedstrijd-titel-tekst { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
 
   /* ── RONDE TABS ── */
   .ronde-tabs { display: flex; padding: 0 2rem; background: var(--bg2); border-bottom: 1px solid var(--border2); overflow-x: auto; }
-  .ronde-tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; padding: 12px 18px; text-transform: uppercase; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+  .ronde-tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); cursor: pointer; font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; padding: 12px 18px; text-transform: uppercase; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
   .ronde-tab:hover { color: var(--text); }
   .ronde-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
@@ -80,12 +80,12 @@
 
   .schans-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
   .schans-header { background: var(--accent); border-bottom: 1px solid var(--border2); padding: 10px 14px; transition: background 0.4s; }
-  .schans-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); }
+  .schans-title { font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); }
 
   .categorie-block { padding: 12px 14px; border-bottom: 1px solid var(--border); }
   .categorie-block:last-child { border-bottom: none; }
   .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .cat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  .cat-label { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
   .cat-best { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
   .cat-best strong { color: var(--gold); font-weight: 500; }
 
@@ -96,17 +96,29 @@
   .springer-table tbody tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
   .springer-table tbody tr:last-child { border-bottom: none; }
   .springer-table tbody tr:hover { background: rgba(0,0,0,0.025); }
-  .springer-table td { padding: 6px 4px; font-size: 12px; vertical-align: middle; }
+  .springer-table tbody tr { height: 32px; }
+  .springer-table td { padding: 0 4px; font-size: 12px; vertical-align: middle; }
 
   .td-nr { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; width: 22px; }
-  .td-naam { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
-  .td-naam.italic { font-style: italic; }
-  .td-afstand { font-family: 'DM Mono', monospace; font-size: 11px; text-align: center; width: 44px; color: var(--muted); }
-  .td-afstand.best { color: var(--accent); font-weight: 500; }
-  .td-afstand.is-pr { color: var(--pr); font-weight: 500; }
-  .td-afstand.is-season { color: var(--season); font-weight: 500; }
-  .td-afstand.is-nat { color: var(--nat); }
+  .td-naam { max-width: 160px; font-size: 12px; vertical-align: middle; }
+  .naam-inner { display: flex; align-items: center; justify-content: space-between; gap: 4px; overflow: hidden; }
+  .naam-links { flex: 1; overflow: hidden; min-width: 0; }
+  .naam-links .naam-tekst { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .td-naam.italic .naam-tekst { font-style: italic; }
+  .naam-club { display: block; font-size: 8px; color: rgba(0,0,0,0.3); font-family: 'DM Mono', monospace; margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.04em; }
+  .td-afstand { font-family: 'DM Mono', monospace; font-size: 10px; text-align: center; width: 38px; color: rgba(0,0,0,0.28); }
+  .td-afstand.best { color: rgba(0,0,0,0.5); font-weight: 700; }
+  .td-afstand.is-nat { color: rgba(204,34,34,0.5); }
+  .td-beste { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; text-align: right; white-space: nowrap; color: var(--text); padding-left: 8px !important; width: 52px; }
+  .td-beste.leeg { color: rgba(0,0,0,0.2); font-weight: 400; font-size: 11px; }
+  .td-afstand.is-afwezig { color: rgba(0,0,0,0.2); }
+  .tr-afwezig td { color: rgba(0,0,0,0.25) !important; }
   .td-afstand.is-empty { color: rgba(0,0,0,0.2); }
+  .naam-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; border-radius: 3px; padding: 1px 4px; flex-shrink: 0; }
+  .naam-badge.pr { background: rgba(217,90,0,0.12); color: var(--pr); }
+  .naam-badge.sr { background: rgba(160,120,0,0.12); color: var(--season); }
+  .naam-badge.tr { background: rgba(0,160,80,0.12); color: #1a8a4a; }
+  .naam-badge.nr { background: rgba(29,178,242,0.15); color: #0a7ab0; }
   .td-afstand.is-dim { color: rgba(0,0,0,0.3); font-size: 10px; border-right: 1px solid var(--border2); padding-right: 6px; }
   .springer-table th.dim-header { color: rgba(0,0,0,0.35); font-size: 8px; }
   .td-ver { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(0,0,0,0.28); text-align: center; width: 28px; white-space: nowrap; border-right: 1px solid var(--border2); }
@@ -119,6 +131,16 @@
   .stand-2 { background: rgba(96,112,128,0.12); color: var(--silver); }
   .stand-3 { background: rgba(154,68,0,0.12); color: var(--bronze); }
   .stand-other { color: var(--muted); font-size: 10px; font-family: 'DM Mono', monospace; }
+
+  .toggle-pogingen { display: flex; align-items: center; gap: 6px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 14px 12px 0; margin-left: auto; flex-shrink: 0; transition: color 0.15s; }
+  .toggle-pogingen:hover { color: var(--text); }
+  .toggle-dot { width: 28px; height: 16px; border-radius: 999px; background: var(--border2); position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .toggle-dot::after { content: ''; position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+  .toggle-pogingen.actief { color: var(--accent); }
+  .toggle-pogingen.actief .toggle-dot { background: var(--accent); }
+  .toggle-pogingen.actief .toggle-dot::after { transform: translateX(12px); }
+  body.hide-pogingen .td-afstand { display: none; }
+  body.hide-pogingen .springer-table th:not(.ver-header):not(.left):not([style*="padding-left"]) { display: none; }
 
   .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; gap: 12px; }
   .state-box .icon { font-size: 32px; opacity: 0.3; }
@@ -177,8 +199,10 @@
 </main>
 
 <div class="legenda">
-  <div class="legenda-item"><span class="legenda-dot" style="background:var(--pr)"></span>Persoonlijk record</div>
-  <div class="legenda-item"><span class="legenda-dot" style="background:var(--season)"></span>Seizoensrecord</div>
+  <div class="legenda-item"><span class="naam-badge nr" style="margin:0;">NR</span>Nederlands/Hollands/Fries record</div>
+  <div class="legenda-item"><span class="naam-badge tr" style="margin:0;">TR</span>Schansrecord</div>
+  <div class="legenda-item"><span class="naam-badge pr" style="margin:0;">PR</span>Persoonlijk record</div>
+  <div class="legenda-item"><span class="naam-badge sr" style="margin:0;">SR</span>Seizoensrecord</div>
   <div class="legenda-item"><span class="legenda-dot" style="background:var(--accent);opacity:0.5;"></span>Beste poging</div>
   <div class="legenda-item"><span class="legenda-dot" style="background:var(--nat)"></span>nat / afg. / b.s.</div>
 </div>
@@ -189,8 +213,10 @@ const PBH_PLAATSEN = ['linschoten','polsbroekerdam','jaarsveld','vlist','zegveld
 
 let pollTimer = null;
 let actieveRonde = null;
+let actieveWedstrijdId = null;
 let rondenData = {};
 let recordsData = [];
+let officialsData = '';
 let alleWedstrijden = []; // { id, naam, datum (YYYY-MM-DD), plaats, bron }
 
 // ─── DATUM HULPFUNCTIES ───────────────────────────────────────────────────────
@@ -454,6 +480,7 @@ function isLive(wedstrijd) {
 function laadWedstrijd(id) {
   clearInterval(pollTimer);
   actieveRonde = null;
+  actieveWedstrijdId = id;
   const wedstrijd = alleWedstrijden.find(w => w.id === id);
   if (wedstrijd) {
     pasThemaToe(wedstrijd.plaats);
@@ -483,19 +510,25 @@ async function fetchEnRender(id) {
 }
 
 function parseEnRender(html) {
+  officialsData = '';
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const titelEl = doc.querySelector('table td[colspan="3"] center');
   if (titelEl) {
-    const div = document.getElementById('wedstrijd-title');
-    document.getElementById('wedstrijd-titel-tekst').textContent = titelEl.textContent;
-    div.style.display = 'flex';
+    // Split op <br>: eerste deel = wedstrijdnaam, rest = officials
+    const regels = titelEl.innerHTML.split(/<br\s*\/?>/i).map(r => r.replace(/<[^>]+>/g, '').trim()).filter(Boolean);
+    document.getElementById('wedstrijd-titel-tekst').textContent = regels[0] || '';
+    document.getElementById('wedstrijd-title').style.display = 'flex';
+    // Officials: alles na eerste regel, telefoonnummers verwijderen
+    officialsData = regels.slice(1).join(' ')
+      .replace(/\(\s*[\d\-]+\s*\)/g, '')   // (06-12345678)
+      .trim();
   }
   const hoofdtabel = doc.querySelector('table[width="100%"][border="1"]');
   if (!hoofdtabel) { toonFout('Kon wedstrijddata niet lezen.'); return; }
   rondenData = {};
   let huidigeRonde = null;
   hoofdtabel.querySelectorAll('tr').forEach(row => {
-    const rondeCell = row.querySelector('td[colspan="3"][align="center"]');
+    const rondeCell = row.querySelector('td[colspan="3"][align="center"], td[colspan="2"][align="center"]');
     if (rondeCell) {
       huidigeRonde = rondeCell.textContent.trim();
       if (!rondenData[huidigeRonde]) rondenData[huidigeRonde] = [];
@@ -530,9 +563,15 @@ function parseEnRender(html) {
     recordsData.push({ label, items });
   });
 
+  const cacheKey = `ronde_${actieveWedstrijdId}`;
+  const gecachteRonde = sessionStorage.getItem(cacheKey);
+  if (!actieveRonde || !rondenData[actieveRonde]) {
+    actieveRonde = (gecachteRonde && (rondenData[gecachteRonde] || gecachteRonde === '__records__' || gecachteRonde === '__officials__')) ? gecachteRonde : Object.keys(rondenData)[0];
+  }
   bouwRondeTabs();
-  if (!actieveRonde || !rondenData[actieveRonde]) actieveRonde = Object.keys(rondenData)[0];
-  renderRonde(actieveRonde);
+  if (actieveRonde === '__records__') renderRecords();
+  else if (actieveRonde === '__officials__') renderOfficials();
+  else renderRonde(actieveRonde);
 }
 
 function parseSchans(cel) {
@@ -571,6 +610,8 @@ function parseSchans(cel) {
         let type = 'normaal';
         if (bg === 'YELLOW') type = 'season';
         if (bg === '#FF6600' || bg === 'FF6600') type = 'pr';
+        if (bg === '#C2F0C2') type = 'tr';
+        if (bg === '#1DB2F2') type = 'nr';
         if (['nat','afg.','b.s.'].includes(tekst)) type = 'misslukt';
         if (!tekst || tekst === '\u00a0') type = 'leeg';
         const dim = dimIndices.has(i);
@@ -634,6 +675,7 @@ function bouwRondeTabs() {
     btn.textContent = ronde;
     btn.onclick = () => {
       actieveRonde = ronde;
+      sessionStorage.setItem(`ronde_${actieveWedstrijdId}`, ronde);
       document.querySelectorAll('.ronde-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderRonde(ronde);
@@ -648,12 +690,40 @@ function bouwRondeTabs() {
     btn.textContent = 'Records';
     btn.onclick = () => {
       actieveRonde = '__records__';
+      sessionStorage.setItem(`ronde_${actieveWedstrijdId}`, '__records__');
       document.querySelectorAll('.ronde-tab').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderRecords();
     };
     tabsEl.appendChild(btn);
   }
+
+  // Officials tab
+  if (officialsData) {
+    const btn = document.createElement('button');
+    btn.className = 'ronde-tab' + (actieveRonde === '__officials__' ? ' active' : '');
+    btn.textContent = 'Officials';
+    btn.onclick = () => {
+      actieveRonde = '__officials__';
+      sessionStorage.setItem(`ronde_${actieveWedstrijdId}`, '__officials__');
+      document.querySelectorAll('.ronde-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderOfficials();
+    };
+    tabsEl.appendChild(btn);
+  }
+
+  // Pogingen toggle
+  const isAan = !document.body.classList.contains('hide-pogingen');
+  const toggle = document.createElement('button');
+  toggle.id = 'toggle-pogingen';
+  toggle.className = 'toggle-pogingen' + (isAan ? ' actief' : '');
+  toggle.innerHTML = `<span class="toggle-dot"></span>Pogingen`;
+  toggle.addEventListener('click', () => {
+    const verberg = document.body.classList.toggle('hide-pogingen');
+    toggle.classList.toggle('actief', !verberg);
+  });
+  tabsEl.appendChild(toggle);
 }
 
 function renderRecords() {
@@ -703,6 +773,32 @@ function renderRecords() {
   main.appendChild(wrap);
 }
 
+function renderOfficials() {
+  const main = document.getElementById('main');
+  // Splits op sleutelwoorden als "Wedstrijdleider" / "Commentator" / "Jurylid" etc.
+  const items = officialsData
+    .split(/(?=(?:Wedstrijdleider|Commentator|Jurylid|Scheidsrechter|Official)\s)/i)
+    .map(s => s.trim()).filter(Boolean);
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;max-width:480px;';
+
+  items.forEach(item => {
+    const colonIdx = item.indexOf(':');
+    const label = colonIdx !== -1 ? item.slice(0, colonIdx).trim() : item;
+    const waarde = colonIdx !== -1 ? item.slice(colonIdx + 1).trim() : '';
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border);';
+    row.innerHTML = `
+      <span style="font-family:'Oswald',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);min-width:160px;flex-shrink:0;">${label}</span>
+      <span style="font-size:14px;font-weight:500;">${waarde}</span>`;
+    wrap.appendChild(row);
+  });
+
+  main.innerHTML = '';
+  main.appendChild(wrap);
+}
+
 function renderRonde(ronde) {
   const main = document.getElementById('main');
   const schansen = rondenData[ronde];
@@ -712,9 +808,14 @@ function renderRonde(ronde) {
   grid.className = 'schansen-grid';
 
   schansen.forEach((cats, si) => {
+    const catNamen = cats.map(c => c.basisNaam.toLowerCase());
+    const schansLetter = catNamen.some(n => n.includes('senior')) ? 'A'
+      : catNamen.some(n => n.includes('junior') || /\bjongens\s+a\b/.test(n)) ? 'B'
+      : catNamen.some(n => n.includes('meisje') || n.includes('dames')) ? 'C'
+      : String(si + 1);
     const card = document.createElement('div');
     card.className = 'schans-card';
-    card.innerHTML = `<div class="schans-header"><span class="schans-title">Schans ${si+1}</span></div>`;
+    card.innerHTML = `<div class="schans-header"><span class="schans-title">Schans ${schansLetter}</span></div>`;
 
     cats.forEach(cat => {
       const block = document.createElement('div');
@@ -734,18 +835,17 @@ function renderRonde(ronde) {
       block.innerHTML = `
         <div class="cat-header">
           <span class="cat-label">${cat.basisNaam}${groepSuffix}</span>
-          ${beste.v>0?`<span class="cat-best">Best: <strong>${beste.v.toFixed(2)} m</strong></span>`:''}
+          ${beste.v>0?`<span class="cat-best">Beste: <strong>${beste.v.toFixed(2)} m</strong></span>`:''}
         </div>
         <table class="springer-table">
           <thead><tr>
             <th class="left" style="width:30px">Nr.</th>
             <th class="left">Naam</th>
-            <th class="ver-header">Ver.</th>
             ${labels.map((l,li) => {
-              const isLast = li === labels.length - 1;
-              const cls = [l==='Vr.'?'dim-header':'', isLast?'last-poging-header':''].filter(Boolean).join(' ');
+              const cls = l==='Vr.'?'dim-header':'';
               return `<th${cls?' class="'+cls+'"':''}>${l}</th>`;
             }).join('')}
+            <th class="left" style="padding-left:8px;">Beste</th>
             <th>St.</th>
           </tr></thead>
           <tbody></tbody>
@@ -753,20 +853,30 @@ function renderRonde(ronde) {
       const tbody = block.querySelector('tbody');
       cat.springers.forEach(s => {
         const tr = document.createElement('tr');
+        const isAfwezig = s.pogingen.filter(p => !p.dim).every(p => p.tekst === 'afg.');
+        const heeftNR = !isAfwezig && s.pogingen.some(p => p.type === 'nr');
+        const heeftTR = !isAfwezig && !heeftNR && s.pogingen.some(p => p.type === 'tr');
+        const heeftPR = !isAfwezig && !heeftNR && !heeftTR && s.pogingen.some(p => p.type === 'pr');
+        const heeftSR = !isAfwezig && !heeftNR && !heeftTR && !heeftPR && s.pogingen.some(p => p.type === 'season');
+        const badge = heeftNR ? '<span class="naam-badge nr">NR</span>'
+          : heeftTR ? '<span class="naam-badge tr">TR</span>'
+          : heeftPR ? '<span class="naam-badge pr">PR</span>'
+          : heeftSR ? '<span class="naam-badge sr">SR</span>' : '';
         const pogs = s.pogingen.map((p,pi) => {
           let cls='td-afstand';
-          if (pi === s.pogingen.length - 1) cls+=' last-poging';
           if (p.dim) cls+=' is-dim';
           else if (pi===s.besteIdx) cls+=' best';
-          if (p.type==='pr') cls+=' is-pr';
-          else if (p.type==='season') cls+=' is-season';
-          else if (p.type==='misslukt') cls+=' is-nat';
+          if (p.type==='misslukt') cls+= isAfwezig ? ' is-afwezig' : ' is-nat';
           else if (p.type==='leeg') cls+=' is-empty';
-          return `<td class="${cls}">${p.type==='leeg'?'—':p.tekst}</td>`;
+          const tekst = p.type==='leeg' ? '—' : p.tekst==='nat' ? '💧' : p.tekst;
+          return `<td class="${cls}">${tekst}</td>`;
         }).join('');
+        const besteTekst = s.beste ? s.beste + ' m' : '—';
+        const besteCls = 'td-beste' + (s.beste ? '' : ' leeg');
         const pl=parseInt(s.plaats);
         const stand=!isNaN(pl)?(pl<=3?`<span class="stand-badge stand-${pl}">${pl}</span>`:`<span class="stand-other">${pl}</span>`):`<span class="stand-other">—</span>`;
-        tr.innerHTML=`<td class="td-nr">${s.nr}</td><td class="td-naam${s.isItalic?' italic':''}" title="${s.naam}">${s.naam}</td><td class="td-ver">${s.vereniging||''}</td>${pogs}<td class="td-stand">${stand}</td>`;
+        if (isAfwezig) tr.classList.add('tr-afwezig');
+        tr.innerHTML=`<td class="td-nr">${s.nr}</td><td class="td-naam${s.isItalic?' italic':''}" title="${s.naam}"><div class="naam-inner"><div class="naam-links"><span class="naam-tekst">${s.naam}</span>${s.vereniging?`<span class="naam-club">${s.vereniging}</span>`:''}</div>${badge}</div></td>${pogs}<td class="${besteCls}">${besteTekst}</td><td class="td-stand">${stand}</td>`;
         tbody.appendChild(tr);
       });
       card.appendChild(block);
