@@ -46,6 +46,17 @@
   }
   .datum-input:focus { border-color: var(--accent); }
 
+  /* bond selector */
+  .bond-wrap { position: relative; flex-shrink: 0; }
+  .bond-select {
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+    color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px;
+    padding: 7px 28px 7px 12px; outline: none; transition: border-color 0.15s;
+    cursor: pointer; appearance: none; -webkit-appearance: none; width: 80px;
+  }
+  .bond-select:focus { border-color: var(--accent); }
+  .bond-select option { background: #ffffff; }
+
   /* wedstrijd selector */
   .wedstrijd-wrap { position: relative; flex: 1; max-width: 380px; min-width: 0; }
   .wedstrijd-select {
@@ -83,6 +94,9 @@
   .schans-title { font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-text); }
 
   .categorie-block { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -14px; padding: 0 14px; }
+  .table-scroll .springer-table { min-width: 400px; }
+  .table-scroll .springer-table thead th { position: static; background: none; }
   .categorie-block:last-child { border-bottom: none; }
   .cat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
   .cat-label { font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
@@ -91,7 +105,7 @@
 
   .springer-table { width: 100%; border-collapse: collapse; }
   .springer-table thead tr { border-bottom: 1px solid var(--border); }
-  .springer-table thead th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; color: var(--muted); padding: 4px 4px 6px; text-align: center; text-transform: uppercase; }
+  .springer-table thead th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; color: var(--muted); padding: 4px 4px 6px; text-align: center; text-transform: uppercase; position: sticky; top: 57px; background: var(--bg2); z-index: 2; }
   .springer-table thead th.left { text-align: left; }
   .springer-table tbody tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
   .springer-table tbody tr:last-child { border-bottom: none; }
@@ -109,7 +123,7 @@
   .td-afstand { font-family: 'DM Mono', monospace; font-size: 10px; text-align: center; width: 38px; color: rgba(0,0,0,0.28); }
   .td-afstand.best { color: rgba(0,0,0,0.5); font-weight: 700; }
   .td-afstand.is-nat { color: rgba(204,34,34,0.5); }
-  .td-beste { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; text-align: right; white-space: nowrap; color: var(--text); padding-left: 8px !important; width: 52px; }
+  .td-beste { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; color: var(--text); width: 52px; border-right: 1px solid var(--border2); }
   .td-beste.leeg { color: rgba(0,0,0,0.2); font-weight: 400; font-size: 11px; }
   .td-afstand.is-afwezig { color: rgba(0,0,0,0.2); }
   .tr-afwezig td { color: rgba(0,0,0,0.25) !important; }
@@ -152,6 +166,44 @@
   .legenda-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
   .legenda-dot { width: 10px; height: 10px; border-radius: 2px; }
 
+  /* ── SKELETON ── */
+  .skel { background: linear-gradient(90deg, var(--bg3) 25%, var(--border2) 50%, var(--bg3) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .skel-title { height: 14px; width: 55%; }
+  .skel-cat { height: 11px; width: 38%; }
+  .skel-row { display: flex; gap: 8px; align-items: center; height: 32px; padding: 0 4px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .skel-row:last-child { border-bottom: none; }
+  .skel-nr { width: 22px; height: 10px; flex-shrink: 0; }
+  .skel-naam { flex: 1; height: 12px; }
+  .skel-val { width: 36px; height: 10px; flex-shrink: 0; }
+  .skel-beste { width: 50px; height: 13px; flex-shrink: 0; }
+
+  /* ── POGING POPUP ── */
+  .poging-popup {
+    position: fixed;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+    z-index: 300;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    min-width: 170px;
+    max-width: 240px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+  .poging-popup.zichtbaar { opacity: 1; }
+  .poging-popup-rij { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-bottom: 1px solid var(--border); }
+  .poging-popup-rij:last-child { border-bottom: none; }
+  .poging-popup-label { color: var(--muted); letter-spacing: 0.05em; font-size: 10px; text-transform: uppercase; white-space: nowrap; }
+  .poging-popup-waarde { font-weight: 500; color: var(--text); text-align: right; }
+  .poging-popup-laden { color: var(--muted); font-size: 11px; text-align: center; padding: 4px 0; }
+  .td-afstand.heeft-link { cursor: pointer; }
+  .td-afstand.heeft-link:hover { background: var(--accent-subtle); border-radius: 3px; }
+
   @media (max-width: 700px) {
     header { padding: 8px 1rem; height: auto; flex-wrap: wrap; gap: 8px; }
     .header-controls { width: 100%; flex-wrap: wrap; }
@@ -170,6 +222,15 @@
   <div class="live-pill"><span class="live-dot"></span>LIVE</div>
 
   <div class="header-controls">
+    <div class="bond-wrap">
+      <select class="bond-select" id="bond-select">
+        <option value="3">PBH</option>
+        <option value="2">FLB</option>
+        <option value="1">Nat.</option>
+      </select>
+      <span class="select-arrow">▾</span>
+    </div>
+
     <div class="datum-wrap">
       <input type="date" class="datum-input" id="datum-input">
     </div>
@@ -208,8 +269,7 @@
 </div>
 
 <script>
-const POLL_INTERVAL = 10000;
-const PBH_PLAATSEN = ['linschoten','polsbroekerdam','jaarsveld','vlist','zegveld','kockengen','stichtse vecht','vrienden van de bond','red bull'];
+const POLL_INTERVAL = 60000;
 
 let pollTimer = null;
 let actieveRonde = null;
@@ -217,7 +277,10 @@ let actieveWedstrijdId = null;
 let rondenData = {};
 let recordsData = [];
 let officialsData = '';
-let alleWedstrijden = []; // { id, naam, datum (YYYY-MM-DD), plaats, bron }
+let alleWedstrijden = [];
+let actieveIdOrg = '2';
+let geladenJaar = null;
+let uitslagModus = false;
 
 // ─── DATUM HULPFUNCTIES ───────────────────────────────────────────────────────
 
@@ -231,17 +294,18 @@ function parseNaarISO(str) {
   return m ? `${m[3]}-${m[2]}-${m[1]}` : null;
 }
 
-function isPBH(plaats) {
-  return PBH_PLAATSEN.some(p => plaats.toLowerCase().includes(p));
-}
-
 // ─── KALENDER LADEN ───────────────────────────────────────────────────────────
 
-async function laadKalender() {
+async function laadKalender(id_org = '2', jaar = null) {
+  if (!jaar) jaar = vandaagISO().slice(0, 4);
+  actieveIdOrg = id_org;
+  geladenJaar = jaar;
+
   try {
+    const qs = `id_org=${id_org}&jaar=${jaar}`;
     const [kalRes, uitRes] = await Promise.all([
-      fetch('/.netlify/functions/kalender?pagina=kalender'),
-      fetch('/.netlify/functions/kalender?pagina=uitslagen'),
+      fetch(`/.netlify/functions/kalender?pagina=kalender&${qs}`),
+      fetch(`/.netlify/functions/kalender?pagina=uitslagen&${qs}`),
     ]);
     const [kalenderHtml, uitslagenHtml] = await Promise.all([
       kalRes.text(),
@@ -251,8 +315,6 @@ async function laadKalender() {
     const gezienIds = new Set();
 
     // Kalender (komende + recente)
-    // De kalender-tabel heeft kolommen: nr | datum | tijd | plaats | naam
-    // De link met id_wedstrijd zit in de naam-kolom (laatste td)
     const kalDoc = new DOMParser().parseFromString(kalenderHtml, 'text/html');
     kalDoc.querySelectorAll('table tr').forEach(tr => {
       const link = tr.querySelector('a[href*="id_wedstrijd"]');
@@ -261,19 +323,16 @@ async function laadKalender() {
       if (!match) return;
       const cellen = tr.querySelectorAll('td');
       if (cellen.length < 4) return;
-      // Zoek de datum-cel: bevat DD-MM-YYYY patroon
       let datumRaw = '';
       let plaats = '';
       cellen.forEach(td => {
         const t = td.textContent.trim();
         if (!datumRaw && /\d{2}-\d{2}-\d{4}/.test(t)) datumRaw = t;
       });
-      // Plaats is de td vóór de naam-td (die de link bevat)
       const linkTd = link.closest('td');
       const tds = [...cellen];
       const linkIdx = tds.indexOf(linkTd);
       if (linkIdx > 0) plaats = tds[linkIdx - 1].textContent.trim();
-      if (!isPBH(plaats)) return;
       const datum = parseNaarISO(datumRaw);
       if (!datum) return;
       if (gezienIds.has(match[1])) return;
@@ -281,37 +340,26 @@ async function laadKalender() {
       wedstrijden.push({ id: match[1], naam: link.textContent.trim(), datum, plaats });
     });
 
-    // Uitslagen (gespeeld) — alleen PBH-secties
+    // Uitslagen (gespeeld)
     const uitDoc = new DOMParser().parseFromString(uitslagenHtml, 'text/html');
-    let inPBH = false;
-    uitDoc.querySelectorAll('h2, table').forEach(el => {
-      if (el.tagName === 'H2') {
-        inPBH = el.textContent.toLowerCase().includes('pbh');
-        return;
-      }
-      if (!inPBH || el.tagName !== 'TABLE') return;
-      el.querySelectorAll('tr').forEach(tr => {
+    uitDoc.querySelectorAll('table').forEach(tabel => {
+      tabel.querySelectorAll('tr').forEach(tr => {
         const link = tr.querySelector('a[href*="id_wedstrijd"]');
         if (!link) return;
         const match = link.getAttribute('href').match(/id_wedstrijd=(\d+)/);
         if (!match || gezienIds.has(match[1])) return;
         const cellen = [...tr.querySelectorAll('td')];
-        // Datum-cel: bevat DD-MM-YYYY
         let datumRaw = '';
         let plaats = '';
-        let naam = link.textContent.trim();
-        cellen.forEach((td, i) => {
+        const naam = link.closest('td')?.querySelector('a')?.textContent.trim() || link.textContent.trim();
+        cellen.forEach(td => {
           const t = td.textContent.trim();
           if (!datumRaw && /\d{2}-\d{2}-\d{4}/.test(t)) datumRaw = t;
         });
-        // Plaats is de td na de datum-td
         const datumIdx = cellen.findIndex(td => /\d{2}-\d{2}-\d{4}/.test(td.textContent.trim()));
         if (datumIdx !== -1 && cellen[datumIdx + 1]) {
           plaats = cellen[datumIdx + 1].textContent.trim();
         }
-        // Naam uit de td die de link bevat
-        const linkTd = link.closest('td');
-        if (linkTd) naam = linkTd.querySelector('a')?.textContent.trim() || naam;
         const datum = parseNaarISO(datumRaw);
         if (!datum) return;
         gezienIds.add(match[1]);
@@ -335,13 +383,6 @@ function initialiseerDatumPicker() {
   const urlDatum = params.get('datum');
   const urlId    = params.get('id');
 
-  // Stel min/max in op basis van beschikbare wedstrijden
-  const datums = alleWedstrijden.map(w => w.datum).sort();
-  if (datums.length) {
-    datumInput.min = datums[0];
-    datumInput.max = datums[datums.length - 1];
-  }
-
   // Datum uit URL, anders vandaag of dichtstbijzijnde wedstrijd
   const vandaag = vandaagISO();
   if (urlDatum) {
@@ -353,7 +394,14 @@ function initialiseerDatumPicker() {
   vulWedstrijdSelector(datumInput.value, urlId);
 
   datumInput.addEventListener('change', () => {
-    vulWedstrijdSelector(datumInput.value, null);
+    const gekozenJaar = datumInput.value.slice(0, 4);
+    if (gekozenJaar !== geladenJaar) {
+      laadKalender(actieveIdOrg, gekozenJaar).then(() => {
+        vulWedstrijdSelector(datumInput.value, null);
+      });
+    } else {
+      vulWedstrijdSelector(datumInput.value, null);
+    }
   });
 }
 
@@ -371,6 +419,7 @@ function vindDichtstbijzijndeDatum(vandaag) {
 
 function zetURL(datum, id) {
   const params = new URLSearchParams();
+  if (actieveIdOrg && actieveIdOrg !== '2') params.set('id_org', actieveIdOrg);
   if (datum) params.set('datum', datum);
   if (id)    params.set('id', id);
   history.replaceState(null, '', '?' + params.toString());
@@ -441,13 +490,16 @@ const CLUB_THEMAS = {
   linschoten:     { accent: '#cc1f1f', accent2: '#a81515', accentText: '#ffffff', accentSubtle: 'rgba(204,31,31,0.10)' },
   polsbroekerdam: { accent: '#1a5fa8', accent2: '#134a87', accentText: '#ffffff', accentSubtle: 'rgba(26,95,168,0.10)' },
   zegveld:        { accent: '#e07020', accent2: '#c05a10', accentText: '#ffffff', accentSubtle: 'rgba(224,112,32,0.10)' },
-  kockengen:      { accent: '#5a3a8a', accent2: '#43297a', accentText: '#ffffff', accentSubtle: 'rgba(90,58,138,0.10)' },
+  stichtse_vecht: { accent: '#2aace2', accent2: '#1a8ec0', accentText: '#ffffff', accentSubtle: 'rgba(42,172,226,0.10)' },
 };
+
+const SLUG_ALIAS = { kockengen: 'stichtse_vecht' };
 
 const STANDAARD_THEMA = { accent: '#1d6ef5', accent2: '#1558d0', accentText: '#ffffff', accentSubtle: 'rgba(29,110,245,0.08)' };
 
 function pasThemaToe(plaats) {
-  const slug = plaats.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z_]/g,'');
+  const raw = plaats.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z_]/g,'');
+  const slug = SLUG_ALIAS[raw] ?? raw;
   const thema = CLUB_THEMAS[slug] || STANDAARD_THEMA;
   const root = document.documentElement;
   root.style.setProperty('--accent',        thema.accent);
@@ -460,9 +512,8 @@ function pasThemaToe(plaats) {
 
 function toonClubLogo(plaats) {
   const img = document.getElementById('club-logo');
-  const clubSlug = plaats.toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z_]/g, '');
+  const raw = plaats.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z_]/g, '');
+  const clubSlug = SLUG_ALIAS[raw] ?? raw;
   img.src = `/.netlify/functions/logo?club=${clubSlug}`;
   img.alt = plaats;
   img.classList.remove('hidden');
@@ -615,7 +666,9 @@ function parseSchans(cel) {
         if (['nat','afg.','b.s.'].includes(tekst)) type = 'misslukt';
         if (!tekst || tekst === '\u00a0') type = 'leeg';
         const dim = dimIndices.has(i);
-        return { tekst, type, dim };
+        const linkEl = c.querySelector('a[href]');
+        const href = linkEl ? linkEl.getAttribute('href') : null;
+        return { tekst, type, dim, href };
       });
       let besteIdx = -1, besteWaarde = -1;
       afstanden.forEach((a, i) => {
@@ -724,6 +777,19 @@ function bouwRondeTabs() {
     toggle.classList.toggle('actief', !verberg);
   });
   tabsEl.appendChild(toggle);
+
+  // Uitslag toggle
+  const toggleUitslag = document.createElement('button');
+  toggleUitslag.className = 'toggle-pogingen' + (uitslagModus ? ' actief' : '');
+  toggleUitslag.innerHTML = `<span class="toggle-dot"></span>Uitslag`;
+  toggleUitslag.addEventListener('click', () => {
+    uitslagModus = !uitslagModus;
+    toggleUitslag.classList.toggle('actief', uitslagModus);
+    if (actieveRonde && actieveRonde !== '__records__' && actieveRonde !== '__officials__') {
+      renderRonde(actieveRonde);
+    }
+  });
+  tabsEl.appendChild(toggleUitslag);
 }
 
 function renderRecords() {
@@ -777,7 +843,7 @@ function renderOfficials() {
   const main = document.getElementById('main');
   // Splits op sleutelwoorden als "Wedstrijdleider" / "Commentator" / "Jurylid" etc.
   const items = officialsData
-    .split(/(?=(?:Wedstrijdleider|Commentator|Jurylid|Scheidsrechter|Official)\s)/i)
+    .split(/(?=(?:Wedstrijdleid(?:er|ing)|Commentator|Jurylid(?:en)?|Scheidsrechter|Tijdwaarnemer|Official)\s)/i)
     .map(s => s.trim()).filter(Boolean);
 
   const wrap = document.createElement('div');
@@ -799,6 +865,25 @@ function renderOfficials() {
   main.appendChild(wrap);
 }
 
+function samenvoegGroepen(cats) {
+  const merged = [];
+  const gezien = new Map();
+  cats.forEach(cat => {
+    if (cat.groepNr !== null) {
+      if (!gezien.has(cat.basisNaam)) {
+        const samengevoegd = { ...cat, naam: cat.basisNaam, groepNr: null, springers: [...cat.springers] };
+        gezien.set(cat.basisNaam, samengevoegd);
+        merged.push(samengevoegd);
+      } else {
+        gezien.get(cat.basisNaam).springers.push(...cat.springers);
+      }
+    } else {
+      merged.push(cat);
+    }
+  });
+  return merged;
+}
+
 function renderRonde(ronde) {
   const main = document.getElementById('main');
   const schansen = rondenData[ronde];
@@ -817,7 +902,8 @@ function renderRonde(ronde) {
     card.className = 'schans-card';
     card.innerHTML = `<div class="schans-header"><span class="schans-title">Schans ${schansLetter}</span></div>`;
 
-    cats.forEach(cat => {
+    const weergaveCats = uitslagModus ? samenvoegGroepen(cats) : cats;
+    weergaveCats.forEach(cat => {
       const block = document.createElement('div');
       block.className = 'categorie-block';
       const beste = cat.springers.reduce((b,s) => { const v=parseFloat(s.beste); return (!isNaN(v)&&v>b.v)?{v}:b; }, {v:-1});
@@ -837,21 +923,34 @@ function renderRonde(ronde) {
           <span class="cat-label">${cat.basisNaam}${groepSuffix}</span>
           ${beste.v>0?`<span class="cat-best">Beste: <strong>${beste.v.toFixed(2)} m</strong></span>`:''}
         </div>
-        <table class="springer-table">
+        <div class="table-scroll"><table class="springer-table">
           <thead><tr>
             <th class="left" style="width:30px">Nr.</th>
             <th class="left">Naam</th>
+            <th style="border-right:1px solid var(--border2);">Beste</th>
             ${labels.map((l,li) => {
               const cls = l==='Vr.'?'dim-header':'';
               return `<th${cls?' class="'+cls+'"':''}>${l}</th>`;
             }).join('')}
-            <th class="left" style="padding-left:8px;">Beste</th>
             <th>St.</th>
           </tr></thead>
           <tbody></tbody>
-        </table>`;
+        </table></div>`;
       const tbody = block.querySelector('tbody');
-      cat.springers.forEach(s => {
+      const springers = uitslagModus
+        ? [...cat.springers].sort((a, b) => {
+            const aGeldig = a.beste !== null, bGeldig = b.beste !== null;
+            if (!aGeldig && !bGeldig) return 0;
+            if (!aGeldig) return 1;
+            if (!bGeldig) return -1;
+            const pa = parseInt(a.plaats), pb = parseInt(b.plaats);
+            if (isNaN(pa) && isNaN(pb)) return 0;
+            if (isNaN(pa)) return 1;
+            if (isNaN(pb)) return -1;
+            return pa - pb;
+          })
+        : cat.springers;
+      springers.forEach(s => {
         const tr = document.createElement('tr');
         const isAfwezig = s.pogingen.filter(p => !p.dim).every(p => p.tekst === 'afg.');
         const heeftNR = !isAfwezig && s.pogingen.some(p => p.type === 'nr');
@@ -868,15 +967,18 @@ function renderRonde(ronde) {
           else if (pi===s.besteIdx) cls+=' best';
           if (p.type==='misslukt') cls+= isAfwezig ? ' is-afwezig' : ' is-nat';
           else if (p.type==='leeg') cls+=' is-empty';
+          const heeftHref = p.href && p.type !== 'leeg';
+          if (heeftHref) cls+=' heeft-link';
           const tekst = p.type==='leeg' ? '—' : p.tekst==='nat' ? '💧' : p.tekst;
-          return `<td class="${cls}">${tekst}</td>`;
+          const dataAttr = heeftHref ? ` data-href="${p.href}"` : '';
+          return `<td class="${cls}"${dataAttr}>${tekst}</td>`;
         }).join('');
         const besteTekst = s.beste ? s.beste + ' m' : '—';
         const besteCls = 'td-beste' + (s.beste ? '' : ' leeg');
-        const pl=parseInt(s.plaats);
+        const pl = s.beste ? parseInt(s.plaats) : NaN;
         const stand=!isNaN(pl)?(pl<=3?`<span class="stand-badge stand-${pl}">${pl}</span>`:`<span class="stand-other">${pl}</span>`):`<span class="stand-other">—</span>`;
         if (isAfwezig) tr.classList.add('tr-afwezig');
-        tr.innerHTML=`<td class="td-nr">${s.nr}</td><td class="td-naam${s.isItalic?' italic':''}" title="${s.naam}"><div class="naam-inner"><div class="naam-links"><span class="naam-tekst">${s.naam}</span>${s.vereniging?`<span class="naam-club">${s.vereniging}</span>`:''}</div>${badge}</div></td>${pogs}<td class="${besteCls}">${besteTekst}</td><td class="td-stand">${stand}</td>`;
+        tr.innerHTML=`<td class="td-nr">${s.nr}</td><td class="td-naam${s.isItalic?' italic':''}" title="${s.naam}"><div class="naam-inner"><div class="naam-links"><span class="naam-tekst">${s.naam}</span>${s.vereniging?`<span class="naam-club">${s.vereniging}</span>`:''}</div>${badge}</div></td><td class="${besteCls}">${besteTekst}</td>${pogs}<td class="td-stand">${stand}</td>`;
         tbody.appendChild(tr);
       });
       card.appendChild(block);
@@ -890,8 +992,34 @@ function renderRonde(ronde) {
 }
 
 function toonLaden() {
-  document.getElementById('main').innerHTML =
-    `<div class="state-box"><div class="spinner"></div><p>Wedstrijddata ophalen…</p></div>`;
+  const grid = document.createElement('div');
+  grid.className = 'schansen-grid';
+  const pogWidths = [36, 30, 36];
+  for (let i = 0; i < 3; i++) {
+    const naamWidths = [70, 85, 60, 75, 90, 65];
+    const card = document.createElement('div');
+    card.className = 'schans-card';
+    card.innerHTML = `
+      <div class="schans-header" style="display:flex;align-items:center;height:38px;padding:10px 14px;">
+        <div class="skel skel-title"></div>
+      </div>
+      <div class="categorie-block">
+        <div class="cat-header" style="margin-bottom:10px;">
+          <div class="skel skel-cat"></div>
+        </div>
+        ${naamWidths.map(w => `
+          <div class="skel-row">
+            <div class="skel skel-nr"></div>
+            <div class="skel skel-naam" style="max-width:${w}%;"></div>
+            ${pogWidths.map(() => `<div class="skel skel-val"></div>`).join('')}
+            <div class="skel skel-beste"></div>
+          </div>`).join('')}
+      </div>`;
+    grid.appendChild(card);
+  }
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  main.appendChild(grid);
 }
 
 function toonFout(msg) {
@@ -899,7 +1027,115 @@ function toonFout(msg) {
     `<div class="state-box"><div class="icon">⚠️</div><p>Kon data niet laden: ${msg}</p></div>`;
 }
 
-laadKalender();
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+const _initParams = new URLSearchParams(window.location.search);
+const _initIdOrg  = _initParams.get('id_org') || '3';
+const _initJaar   = (_initParams.get('datum') || vandaagISO()).slice(0, 4);
+
+document.getElementById('bond-select').value = _initIdOrg;
+document.getElementById('bond-select').addEventListener('change', (e) => {
+  const jaar = document.getElementById('datum-input').value.slice(0, 4) || vandaagISO().slice(0, 4);
+  laadKalender(e.target.value, jaar);
+});
+
+laadKalender(_initIdOrg, _initJaar);
+
+// ─── POGING POPUP ─────────────────────────────────────────────────────────────
+
+const pogingPopup = document.createElement('div');
+pogingPopup.className = 'poging-popup';
+document.body.appendChild(pogingPopup);
+
+const pogingCache = {};
+
+function sluitPopup() {
+  pogingPopup.classList.remove('zichtbaar');
+}
+
+function toonPopup(el, href) {
+  pogingPopup.innerHTML = '<div class="poging-popup-laden">Laden…</div>';
+  positioneerPopup(el);
+  pogingPopup.classList.add('zichtbaar');
+
+  if (pogingCache[href]) {
+    vulPopup(pogingCache[href]);
+    return;
+  }
+
+  fetch(`/.netlify/functions/poging?url=${encodeURIComponent(href)}`)
+    .then(r => r.text())
+    .then(html => {
+      const data = parsePogingDetail(html);
+      pogingCache[href] = data;
+      vulPopup(data);
+    })
+    .catch(() => {
+      pogingCache[href] = null;
+      vulPopup(null);
+    });
+}
+
+function positioneerPopup(el) {
+  const rect = el.getBoundingClientRect();
+  const popH = 90;
+  const popW = 200;
+  let top = rect.bottom + 6;
+  let left = rect.left + rect.width / 2 - popW / 2;
+  if (top + popH > window.innerHeight) top = rect.top - popH - 6;
+  if (left < 8) left = 8;
+  if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  pogingPopup.style.top = top + 'px';
+  pogingPopup.style.left = left + 'px';
+}
+
+function vulPopup(data) {
+  if (!data) {
+    pogingPopup.innerHTML = '<div class="poging-popup-laden">Geen details beschikbaar</div>';
+    return;
+  }
+  const rijen = [
+    data.landingsplaats ? { label: 'Landingsplaats', waarde: data.landingsplaats } : null,
+    data.afwijking      ? { label: 'Afwijking',      waarde: data.afwijking }      : null,
+  ].filter(Boolean);
+
+  if (!rijen.length) {
+    pogingPopup.innerHTML = '<div class="poging-popup-laden">Geen details beschikbaar</div>';
+    return;
+  }
+  pogingPopup.innerHTML = rijen.map(r =>
+    `<div class="poging-popup-rij">
+      <span class="poging-popup-label">${r.label}</span>
+      <span class="poging-popup-waarde">${r.waarde}</span>
+    </div>`
+  ).join('');
+}
+
+function parsePogingDetail(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const data = {};
+  doc.querySelectorAll('th').forEach(th => {
+    const label = th.textContent.trim().toLowerCase();
+    const waarde = th.nextElementSibling?.textContent.trim();
+    if (!waarde) return;
+    if (label === 'landingsplaats') data.landingsplaats = waarde + ' m';
+    if (label === 'afwijking')      data.afwijking      = waarde + ' m';
+  });
+  return (data.landingsplaats || data.afwijking) ? data : null;
+}
+
+document.getElementById('main').addEventListener('click', e => {
+  const td = e.target.closest('.td-afstand.heeft-link');
+  if (td) {
+    e.stopPropagation();
+    toonPopup(td, td.dataset.href);
+    return;
+  }
+  sluitPopup();
+});
+
+document.addEventListener('scroll', sluitPopup, { passive: true });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') sluitPopup(); });
 </script>
 </body>
 </html>

@@ -16,3 +16,13 @@
   from = "/logo"
   to = "/.netlify/functions/logo"
   status = 200
+
+[[redirects]]
+  from = "/klassement"
+  to = "/.netlify/functions/klassement"
+  status = 200
+
+[[redirects]]
+  from = "/poging"
+  to = "/.netlify/functions/poging"
+  status = 200
