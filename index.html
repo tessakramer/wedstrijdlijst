@@ -24,14 +24,18 @@
   header {
     background: var(--bg2); border-bottom: 1px solid var(--border2);
     padding: 0 2rem; display: flex; align-items: center;
-    height: 56px; gap: 16px;
+    height: 56px; gap: 16px; transition: background 0.4s;
   }
 
   #sticky-bar { position: sticky; top: 0; z-index: 100; }
   .logo { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
   .logo span { color: var(--accent); }
-  header { transition: background 0.4s; }
   .live-pill { display: flex; align-items: center; gap: 6px; background: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.35); border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 500; color: var(--live); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; flex-shrink: 0; }
+  .header-nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .nav-sep { width: 1px; height: 18px; background: var(--border2); margin: 0 4px; }
+  .nav-link { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; padding: 5px 9px; border-radius: 6px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+  .nav-link:hover { color: var(--text); background: var(--bg3); }
+  .nav-link.nav-active { color: var(--accent); }
   .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); animation: pulse 1.4s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
@@ -137,11 +141,7 @@
   .naam-badge.nr { background: rgba(29,178,242,0.15); color: #0a7ab0; }
   .td-afstand.is-dim { color: rgba(0,0,0,0.3); font-size: 10px; border-right: 1px solid var(--border2); padding-right: 6px; }
   .springer-table th.dim-header { color: rgba(0,0,0,0.35); font-size: 8px; }
-  .td-ver { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(0,0,0,0.28); text-align: center; width: 28px; white-space: nowrap; border-right: 1px solid var(--border2); }
-  .ver-header { color: rgba(0,0,0,0.28); font-size: 8px; border-right: 1px solid var(--border2); }
-  .td-afstand.last-poging { border-right: 1px solid var(--border2); }
-  .springer-table th.last-poging-header { border-right: 1px solid var(--border2); }
-  .td-stand { text-align: center; width: 28px; }
+  .td-stand{ text-align: center; width: 28px; }
   .stand-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; }
   .stand-1 { background: rgba(196,125,0,0.12); color: var(--gold); }
   .stand-2 { background: rgba(96,112,128,0.12); color: var(--silver); }
@@ -156,7 +156,7 @@
   .toggle-pogingen.actief .toggle-dot { background: var(--accent); }
   .toggle-pogingen.actief .toggle-dot::after { transform: translateX(12px); }
   body.hide-pogingen .td-afstand { display: none; }
-  body.hide-pogingen .springer-table th:not(.ver-header):not(.left):not([style*="border-right"]) { display: none; }
+  body.hide-pogingen .springer-table th:not(.left):not([style*="border-right"]) { display: none; }
   body.hide-pogingen .table-scroll .springer-table { min-width: 0; }
 
   .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; gap: 12px; }
@@ -222,6 +222,13 @@
 
 <header>
   <div class="logo">Fierljep<span>.</span>live</div>
+
+  <nav class="header-nav">
+    <div class="nav-sep"></div>
+    <a href="/" class="nav-link nav-active">Wedstrijden</a>
+    <a href="/klassement.html" class="nav-link">Klassement</a>
+  </nav>
+
   <div class="live-pill"><span class="live-dot"></span>LIVE</div>
 
   <div class="header-controls">
@@ -283,7 +290,7 @@ let rondenData = {};
 let recordsData = [];
 let officialsData = '';
 let alleWedstrijden = [];
-let actieveIdOrg = '2';
+let actieveIdOrg = '3';
 let geladenJaar = null;
 let uitslagModus = false;
 

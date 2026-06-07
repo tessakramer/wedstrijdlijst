@@ -1,20 +1,14 @@
-const BASE = {
-  kalender: 'https://pbholland.com/index.php/kalender/',
-  uitslagen: 'https://pbholland.com/index.php/uitslagen/',
-};
-
 export default async (req) => {
   const url = new URL(req.url);
-  const pagina = url.searchParams.get('pagina') || 'kalender';
+  const id_klassement = url.searchParams.get('id_klassement');
   const id_org = url.searchParams.get('id_org') || '3';
   const jaar   = url.searchParams.get('jaar')   || new Date().getFullYear().toString();
 
-  if (!BASE[pagina]) {
-    return new Response('Ongeldige pagina', { status: 400 });
+  if (!id_klassement) {
+    return new Response('id_klassement is verplicht', { status: 400 });
   }
 
-  const groep    = url.searchParams.get('groep') || '';
-  const fetchUrl = `${BASE[pagina]}?id_org=${id_org}&pbh=1&jaar=${jaar}${groep ? `&groep=${groep}` : ''}`;
+  const fetchUrl = `https://pbholland.com/index.php/klassementenoverzicht_details/?id_klassement=${id_klassement}&id_org=${id_org}&jaar=${jaar}`;
 
   try {
     const response = await fetch(fetchUrl);

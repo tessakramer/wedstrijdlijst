@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fierljep — Klassement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Oswald:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f3; --bg2: #ffffff; --bg3: #f0f0ed;
+    --border: rgba(0,0,0,0.07); --border2: rgba(0,0,0,0.13);
+    --text: #1a1a1a; --muted: #888888;
+    --accent: #1d6ef5;
+    --accent-subtle: rgba(29,110,245,0.08);
+    --gold: #c47d00; --silver: #607080; --bronze: #9a4400;
+    --header-h: 56px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg2); border-bottom: 1px solid var(--border2);
+    padding: 0 2rem; display: flex; align-items: center;
+    height: var(--header-h); position: sticky; top: 0; z-index: 100; gap: 12px;
+  }
+  .logo { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; text-decoration: none; color: var(--text); }
+  .logo span { color: var(--accent); }
+
+  /* ── NAV ── */
+  .header-nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+  .nav-sep { width: 1px; height: 18px; background: var(--border2); margin: 0 4px; }
+  .nav-link { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); text-decoration: none; padding: 5px 9px; border-radius: 6px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+  .nav-link:hover { color: var(--text); background: var(--bg3); }
+  .nav-link.nav-active { color: var(--accent); }
+
+  /* ── STATUS BADGE ── */
+  .status-badge {
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted);
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: 999px;
+    padding: 3px 10px; white-space: nowrap; flex-shrink: 0; display: none;
+  }
+  .status-badge.geladen { color: var(--text); }
+
+  .header-controls { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; min-width: 0; flex-wrap: wrap; }
+
+  /* ── BOND SELECT ── */
+  .bond-wrap { position: relative; flex-shrink: 0; }
+  .bond-select { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 7px 28px 7px 12px; outline: none; transition: border-color 0.15s; appearance: none; -webkit-appearance: none; width: 80px; cursor: pointer; }
+  .bond-select:focus { border-color: var(--accent); }
+  .bond-select option { background: #fff; }
+  .select-arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 11px; pointer-events: none; }
+
+  /* ── JAAR INPUT ── */
+  .jaar-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 7px 12px; outline: none; width: 78px; transition: border-color 0.15s; }
+  .jaar-input:focus { border-color: var(--accent); }
+
+  /* ── CAT SELECT ── */
+  .cat-wrap { position: relative; flex-shrink: 0; }
+  .cat-select { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; padding: 7px 28px 7px 12px; outline: none; transition: border-color 0.15s; appearance: none; -webkit-appearance: none; min-width: 110px; cursor: pointer; }
+  .cat-select:focus { border-color: var(--accent); }
+
+  /* ── TELA SLIDER ── */
+  .tela-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px;
+    padding: 5px 12px; flex-shrink: 0;
+  }
+  .tela-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+  .tela-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 72px; height: 3px; border-radius: 2px;
+    background: var(--border2); outline: none; cursor: pointer;
+  }
+  .tela-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 13px; height: 13px;
+    border-radius: 50%; background: var(--accent); cursor: pointer; border: none;
+    box-shadow: 0 0 0 2px rgba(29,110,245,0.18);
+  }
+  .tela-slider::-moz-range-thumb {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: none;
+  }
+  .tela-readout { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); white-space: nowrap; }
+  .tela-readout .tela-deler { color: var(--muted); }
+
+  /* ── TITEL STRIP ── */
+  .klassement-title {
+    background: var(--bg2); border-bottom: 3px solid var(--accent);
+    padding: 10px 2rem; display: none; align-items: baseline; gap: 10px;
+    position: sticky; top: var(--header-h); z-index: 90;
+  }
+  .klassement-titel-tekst { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* ── MAIN ── */
+  main { padding: 1.5rem 2rem; }
+
+  .klass-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+
+  .table-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  .klass-table { width: 100%; border-collapse: collapse; min-width: 480px; }
+  .klass-table thead th {
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--muted); padding: 6px 6px 8px; text-align: center; text-transform: uppercase;
+    border-bottom: 1px solid var(--border2); white-space: nowrap;
+    background: var(--bg2);
+  }
+  .klass-table thead th.left { text-align: left; }
+  .klass-table tbody tr { border-bottom: 1px solid rgba(0,0,0,0.05); height: 34px; }
+  .klass-table tbody tr:last-child { border-bottom: none; }
+  .klass-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+  .klass-table td { padding: 0 6px; font-size: 12px; vertical-align: middle; }
+
+  .td-stand { text-align: center; width: 32px; }
+  .stand-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; }
+  .stand-1 { background: rgba(196,125,0,0.12); color: var(--gold); }
+  .stand-2 { background: rgba(96,112,128,0.12); color: var(--silver); }
+  .stand-3 { background: rgba(154,68,0,0.12); color: var(--bronze); }
+  .stand-other { color: var(--muted); font-size: 11px; font-family: 'DM Mono', monospace; }
+
+  .td-naam { min-width: 130px; }
+  .naam-tekst { font-size: 13px; display: block; }
+  .naam-club { font-size: 9px; color: rgba(0,0,0,0.3); font-family: 'DM Mono', monospace; display: block; margin-top: 1px; letter-spacing: 0.04em; }
+
+  .td-afstand { font-family: 'DM Mono', monospace; font-size: 11px; text-align: center; min-width: 52px; color: rgba(0,0,0,0.28); }
+  .td-afstand.telt { color: var(--accent); font-weight: 600; background: var(--accent-subtle); }
+  .td-afstand.leeg { color: rgba(0,0,0,0.15); }
+
+  .td-totaal { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 10px !important; min-width: 68px; border-left: 1px solid var(--border2); }
+  .td-totaal.leeg { color: rgba(0,0,0,0.2); font-weight: 400; font-size: 11px; }
+  .th-totaal { border-left: 1px solid var(--border2); text-align: right !important; padding-left: 10px !important; }
+
+  .td-trend { text-align: center; width: 28px; padding: 0 2px !important; }
+  .trend-up   { color: #22a85a; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .trend-down { color: #e04040; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; white-space: nowrap; }
+  .trend-same { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+  .trend-new  { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .td-laatste { font-family: 'DM Mono', monospace; font-size: 11px; text-align: center; min-width: 56px; border-left: 1px solid var(--border2); border-right: 1px solid var(--border2); color: var(--text); font-weight: 500; }
+  .td-laatste.leeg { color: rgba(0,0,0,0.15); font-weight: 400; }
+  .th-laatste { border-left: 1px solid var(--border2); border-right: 1px solid var(--border2); }
+
+  .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; gap: 12px; }
+  .state-box .icon { font-size: 32px; opacity: 0.3; }
+  .state-box p { color: var(--muted); font-size: 14px; max-width: 360px; line-height: 1.6; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── MOBILE ── */
+  @media (max-width: 700px) {
+    header { padding: 8px 1rem; height: auto; gap: 8px; flex-wrap: wrap; }
+    main { padding: 1rem; }
+    .klassement-title { padding: 8px 1rem; }
+    .dist-col { display: none; }
+    .tela-wrap { display: none !important; }
+    .klass-table { min-width: unset; }
+    .status-badge { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Fierljep<span>.</span>live</a>
+
+  <div class="header-nav">
+    <div class="nav-sep"></div>
+    <a href="/" class="nav-link">Wedstrijden</a>
+    <a href="/klassement.html" class="nav-link nav-active">Klassement</a>
+  </div>
+
+  <span class="status-badge" id="status-badge"></span>
+
+  <div class="header-controls">
+    <div class="bond-wrap">
+      <select class="bond-select" id="bond-select">
+        <option value="3">PBH</option>
+        <option value="2">FLB</option>
+        <option value="1">Nat.</option>
+      </select>
+      <span class="select-arrow">▾</span>
+    </div>
+
+    <input type="number" class="jaar-input" id="jaar-input" value="2026" min="2000" max="2099">
+
+    <div class="cat-wrap" id="cat-wrap" style="display:none;">
+      <select class="cat-select" id="cat-select"></select>
+      <span class="select-arrow">▾</span>
+    </div>
+
+    <div class="tela-wrap" id="tela-wrap" style="display:none;">
+      <span class="tela-label">Afstanden</span>
+      <input type="range" class="tela-slider" id="tela-slider" min="1" max="1" value="1" step="1">
+      <span class="tela-readout"><span id="tela-val">1</span><span class="tela-deler" id="tela-max">/—</span></span>
+    </div>
+  </div>
+</header>
+
+<div class="klassement-title" id="klassement-title">
+  <span class="klassement-titel-tekst" id="klassement-titel-tekst"></span>
+</div>
+
+<main id="main">
+  <div class="state-box">
+    <div class="spinner"></div>
+    <p>Klassement laden…</p>
+  </div>
+</main>
+
+<script>
+let springersData   = [];
+let distHeaders     = [];
+let aantalKolommen  = 0;
+let categorieënData = [];
+let minWedstrijden  = 0;
+let lastCompIdx     = ''; // ISO-datum van de meest recente wedstrijddag binnen de actieve categorie
+
+const bondNamen = { '1': 'Nat.', '2': 'FLB', '3': 'PBH' };
+
+// Verdeelsleutel: vast gegeven (Na N wedstrijden tellen X afstanden mee)
+const verdeelSleutel = [
+  [1,1],[2,1],[3,1],[4,2],[5,2],[6,3],[7,3],
+  [8,4],[9,4],[10,5],[11,5],[12,6],[13,6],[Infinity,7],
+];
+
+// ─── STATUS BADGE ─────────────────────────────────────────────────────────────
+
+function zetStatus(tekst, cls = '') {
+  const badge = document.getElementById('status-badge');
+  badge.textContent = tekst;
+  badge.className   = 'status-badge' + (cls ? ' ' + cls : '');
+  badge.style.display = tekst ? '' : 'none';
+}
+
+// ─── URL ──────────────────────────────────────────────────────────────────────
+
+function zetURL() {
+  const p = new URLSearchParams();
+  const id_org = document.getElementById('bond-select').value;
+  if (id_org !== '3') p.set('id_org', id_org);
+  p.set('jaar', document.getElementById('jaar-input').value);
+  const cat = document.getElementById('cat-select').value;
+  if (cat) p.set('cat', cat);
+  const tela = document.getElementById('tela-val').textContent;
+  if (tela) p.set('tela', tela);
+  history.replaceState(null, '', '?' + p.toString());
+}
+
+// ─── KALENDER: extraheer competitie-IDs ───────────────────────────────────────
+
+function haalCompetitieIds(html) {
+  const doc     = new DOMParser().parseFromString(html, 'text/html');
+  const vandaag = new Date(); vandaag.setHours(0, 0, 0, 0);
+  const ids = []; // [{id, datum}]
+  for (const rij of doc.querySelectorAll('tr')) {
+    const cellen = [...rij.querySelectorAll('td')];
+    if (cellen.length < 4) continue;
+    const m = cellen[1]?.textContent.trim().match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (!m) continue;
+    const datum = new Date(+m[3], +m[2] - 1, +m[1]);
+    if (datum >= vandaag) continue;
+    const link = cellen[cellen.length - 1]?.querySelector('a');
+    const idM  = link?.getAttribute('href')?.match(/id_wedstrijd=(\d+)/);
+    if (idM) ids.push({ id: idM[1], datum: datum.toISOString().split('T')[0] });
+  }
+  return ids;
+}
+
+// ─── UITSLAGEN: beste afstand per springer per wedstrijd ──────────────────────
+
+function parseUitslagen(html) {
+  if (!html) return [];
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const resultaten = [];
+
+  for (const h2 of doc.querySelectorAll('h2')) {
+    const categorie = h2.textContent.trim();
+    let el = h2.nextElementSibling;
+    while (el && el.tagName !== 'TABLE') el = el.nextElementSibling;
+    if (!el) continue;
+
+    const headerRij   = el.querySelector('tr');
+    const headers     = [...(headerRij?.querySelectorAll('th, td') || [])].map(c => c.textContent.trim());
+    const naamIdx     = Math.max(headers.findIndex(h => /naam/i.test(h)), 1);
+    // Alleen "Afstand"-kolommen (geen "Finale") tellen mee voor het klassement
+    const afstandIdxs = headers.reduce((acc, h, i) => {
+      if (/afstand/i.test(h) && !/finale/i.test(h)) acc.push(i);
+      return acc;
+    }, []);
+    if (afstandIdxs.length === 0) continue;
+
+    for (const rij of el.querySelectorAll('tr')) {
+      if (rij === headerRij) continue;
+      const cellen = [...rij.querySelectorAll('td')];
+      if (cellen.length < 3) continue;
+
+      const naamEl = cellen[naamIdx]?.querySelector('a[href*="id_persoon"]');
+      if (!naamEl) continue;
+
+      const naamTekst  = naamEl.textContent.trim();
+      const naam       = naamTekst.split(',')[0].trim();
+      const vereniging = (naamTekst.split(',')[1] || '').trim();
+      const idM        = naamEl.getAttribute('href')?.match(/id_persoon=(\d+)/);
+      const id_persoon = idM ? idM[1] : naam;
+
+      // Beste afstand uit uitsluitend de gewone pogingen (geen finales)
+      const beste = Math.max(...afstandIdxs.map(i => {
+        const v = parseFloat(cellen[i]?.textContent.trim().replace(',', '.'));
+        return isNaN(v) ? 0 : v;
+      }));
+      if (beste >= 0.5) {
+        resultaten.push({ categorie, naam, id_persoon, vereniging, verste: beste });
+      }
+    }
+  }
+  return resultaten;
+}
+
+// ─── AGGREGEER naar categorieënData-formaat ───────────────────────────────────
+
+function normaliseerCategorie(naam) {
+  if (/jongens/i.test(naam))                         return 'Jongens';
+  if (/meisjes/i.test(naam))                         return 'Meisjes';
+  if (/junior/i.test(naam))                          return 'Junioren';
+  if (/dames/i.test(naam))                           return 'Dames';
+  if (/senioren|topklasse|\de\s*klasse/i.test(naam)) return 'Senioren';
+  return null; // onbekend (bijv. "Winnaars") → overslaan
+}
+
+function bouwCategorieënData(allResultaten) {
+  // allResultaten = [{categorie, naam, id_persoon, vereniging, verste}, ...]
+  // Per categorie → per springer (id_persoon) → lijst van afstanden + lastDatum bijhouden
+  const byCat = new Map(); // naam → { springerMap, lastDatum }
+
+  for (const r of allResultaten) {
+    const cat_naam = normaliseerCategorie(r.categorie);
+    if (!cat_naam) continue;
+    if (!byCat.has(cat_naam)) byCat.set(cat_naam, { springerMap: new Map(), lastDatum: '' });
+    const entry = byCat.get(cat_naam);
+    if (r.datum > entry.lastDatum) entry.lastDatum = r.datum; // ISO-string: lexicografisch = chronologisch
+    const { springerMap } = entry;
+    if (!springerMap.has(r.id_persoon)) {
+      springerMap.set(r.id_persoon, { naam: r.naam, vereniging: r.vereniging, id_persoon: r.id_persoon, afstanden: [] });
+    }
+    springerMap.get(r.id_persoon).afstanden.push({
+      waarde: r.verste, tekst: r.verste.toFixed(2), datum: r.datum,
+    });
+  }
+
+  const volgorde = ['Senioren', 'Dames', 'Junioren', 'Jongens', 'Meisjes'];
+  const gesorteerd = [
+    ...volgorde.filter(n => byCat.has(n)),
+    ...[...byCat.keys()].filter(n => !volgorde.includes(n)),
+  ];
+
+  return gesorteerd.map(naam => {
+    const { springerMap, lastDatum } = byCat.get(naam);
+    const springers = [...springerMap.values()].map(s => ({
+      ...s,
+      afstanden: [...s.afstanden].sort((a, b) => (b.waarde ?? 0) - (a.waarde ?? 0)),
+    }));
+    const aantalKolommen = Math.max(...springers.map(s => s.afstanden.length), 1);
+    return {
+      naam, springers, lastDatum,
+      distHeaders: Array.from({ length: aantalKolommen }, (_, i) => `W${i + 1}`),
+      aantalKolommen,
+    };
+  });
+}
+
+// ─── LADEN ────────────────────────────────────────────────────────────────────
+
+async function laadKlassement() {
+  const id_org = document.getElementById('bond-select').value;
+  const jaar   = document.getElementById('jaar-input').value;
+
+  // Params lezen VÓÓR zetURL ze overschrijft
+  const urlParams = new URLSearchParams(window.location.search);
+  const herstelCat  = urlParams.get('cat');
+  const herstelTela = urlParams.get('tela') ? parseInt(urlParams.get('tela')) : null;
+
+  document.getElementById('main').innerHTML =
+    '<div class="state-box"><div class="spinner"></div><p>Wedstrijdgegevens ophalen…</p></div>';
+  document.getElementById('klassement-title').style.display = 'none';
+  zetStatus('laden…', 'laden');
+  zetURL();
+
+  try {
+    // 1. Kalenders ophalen voor groepen 1, 2, 3
+    const calHtmls = await Promise.all([1, 2, 3].map(g =>
+      fetch(`/.netlify/functions/kalender?id_org=${id_org}&jaar=${jaar}&groep=${g}`)
+        .then(r => r.ok ? r.text() : '').catch(() => '')
+    ));
+
+    // 2. Competitie-IDs + datums per groep
+    const idsPerGroep = calHtmls.map(h => haalCompetitieIds(h));
+    // Gebruik unieke datums voor minWedstrijden (meerdere wedstrijden op één dag = 1 ronde)
+    const datumTellingen = idsPerGroep.map(g => new Set(g.map(c => c.datum)).size).filter(t => t > 0);
+    minWedstrijden = datumTellingen.length ? Math.min(...datumTellingen) : 0;
+
+    // 3. Alle unieke competitie-IDs + datum-map → uitslagen ophalen
+    const datumPerIdMap = new Map(idsPerGroep.flat().map(c => [c.id, c.datum]));
+    const alleIds = [...new Set(idsPerGroep.flat().map(c => c.id))]
+      .sort((a, b) => parseInt(a) - parseInt(b));
+
+    if (!alleIds.length) {
+      document.getElementById('main').innerHTML =
+        '<div class="state-box"><div class="icon">📅</div><p>Nog geen wedstrijden gespeeld.</p></div>';
+      zetStatus('');
+      return;
+    }
+
+    const uitslagenHtmls = await Promise.all(alleIds.map(id =>
+      fetch(`/.netlify/functions/uitslagen?id_wedstrijd=${id}`)
+        .then(r => r.ok ? r.text() : '').catch(() => '')
+    ));
+
+    // 4. Resultaten aggregeren — datum meegeven per resultaat
+    const allResultaten = uitslagenHtmls.flatMap((h, i) =>
+      parseUitslagen(h).map(r => ({ ...r, datum: datumPerIdMap.get(alleIds[i]) ?? '' }))
+    );
+    categorieënData = bouwCategorieënData(allResultaten);
+
+    if (!categorieënData.length) {
+      document.getElementById('main').innerHTML =
+        '<div class="state-box"><div class="icon">⚠️</div><p>Geen resultaten gevonden.</p></div>';
+      zetStatus('');
+      return;
+    }
+
+    // Status bijwerken met aantal gespeelde wedstrijden
+    const aantalDagen = new Set(idsPerGroep.flat().map(c => c.datum)).size;
+    zetStatus(`${aantalDagen} wedstrijd${aantalDagen !== 1 ? 'en' : ''}`, 'geladen');
+
+    // 5. Categoriedropdown
+    const catSel  = document.getElementById('cat-select');
+    const catWrap = document.getElementById('cat-wrap');
+    if (categorieënData.length > 1) {
+      catSel.innerHTML = categorieënData.map(c => `<option value="${c.naam}">${c.naam}</option>`).join('');
+      catWrap.style.display = 'flex';
+    } else {
+      catWrap.style.display = 'none';
+    }
+
+    if (herstelCat && categorieënData.find(c => c.naam === herstelCat)) catSel.value = herstelCat;
+
+    toonCategorie(catSel.value || categorieënData[0].naam, herstelTela);
+
+  } catch (err) {
+    document.getElementById('main').innerHTML =
+      `<div class="state-box"><div class="icon">⚠️</div><p>Fout bij laden: ${err.message}</p></div>`;
+    zetStatus('');
+  }
+}
+
+// ─── TELA ─────────────────────────────────────────────────────────────────────
+
+function berekenStartTela(nKolommen, categorieNaam = '') {
+  const count = minWedstrijden || nKolommen;
+  const entry = verdeelSleutel.find(([max]) => count <= max)
+             ?? verdeelSleutel[verdeelSleutel.length - 1];
+  const tela  = entry ? Math.min(entry[1], nKolommen) : nKolommen;
+  return tela;
+}
+
+function toonCategorie(naam, forceTela = null) {
+  const cat = categorieënData.find(c => c.naam === naam) || categorieënData[0];
+  if (!cat) return;
+
+  springersData  = cat.springers;
+  distHeaders    = cat.distHeaders;
+  aantalKolommen = cat.aantalKolommen;
+  lastCompIdx    = cat.lastDatum ?? '';
+
+  // Titelstrip tonen
+  const bond = bondNamen[document.getElementById('bond-select').value] || '';
+  const jaar = document.getElementById('jaar-input').value;
+  document.getElementById('klassement-titel-tekst').textContent = `${bond} ${jaar} — ${cat.naam}`;
+  document.getElementById('klassement-title').style.display = 'flex';
+
+  const startTela = forceTela ?? berekenStartTela(cat.aantalKolommen, cat.naam);
+  const telN = Math.min(startTela || aantalKolommen, aantalKolommen);
+  zetTelaUI(telN);
+  document.getElementById('tela-wrap').style.display = 'flex';
+
+  renderKlassement(telN);
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+
+function markeerAfstanden(afstanden, n) {
+  const gesorteerd = afstanden
+    .map((a, i) => ({ v: a.waarde, i }))
+    .filter(x => x.v !== null && x.v > 0)
+    .sort((a, b) => b.v - a.v);
+  const telIndices = new Set(gesorteerd.slice(0, n).map(x => x.i));
+  return afstanden.map((a, i) => ({ ...a, telt: telIndices.has(i) }));
+}
+
+function renderKlassement(telN) {
+  zetURL();
+
+  const metTotaal = springersData.map(s => {
+    const af = markeerAfstanden(s.afstanden, telN);
+    const totaal = af.filter(a => a.telt).reduce((som, a) => som + a.waarde, 0);
+    return { ...s, afstanden: af, totaal };
+  }).sort((a, b) => b.totaal - a.totaal || a.naam.localeCompare(b.naam));
+
+  // ─── Delta: verbetering t.o.v. vóór de laatste wedstrijd ─────────────────────
+  const toonDelta = !!lastCompIdx;
+
+  let vorigeTotaalMap  = null;
+  let vorigePositieMap = null;
+  if (toonDelta) {
+    const vorigeData = springersData.map(s => {
+      const afZonder = s.afstanden.filter(a => a.datum !== lastCompIdx);
+      const af       = markeerAfstanden(afZonder, telN);
+      const totaal   = af.filter(a => a.telt).reduce((som, a) => som + a.waarde, 0);
+      return { id_persoon: s.id_persoon, naam: s.naam, totaal };
+    }).sort((a, b) => b.totaal - a.totaal || a.naam.localeCompare(b.naam));
+
+    vorigeTotaalMap  = new Map(vorigeData.map(s => [s.id_persoon, s.totaal]));
+    vorigePositieMap = new Map(vorigeData.map((s, i) => [s.id_persoon, i + 1]));
+  }
+
+  const nCol      = aantalKolommen;
+  const colLabels = Array.from({ length: nCol }, (_, i) => distHeaders[i] || `W${i + 1}`);
+
+  const card = document.createElement('div');
+  card.className = 'klass-card';
+
+  const outer = document.createElement('div');
+  outer.className = 'table-outer';
+
+  const tabel = document.createElement('table');
+  tabel.className = 'klass-table';
+  tabel.innerHTML = `<thead><tr>
+    <th class="left" style="width:32px;">St.</th>
+    ${toonDelta ? '<th class="td-trend" style="width:28px;"></th>' : ''}
+    <th class="left">Naam</th>
+    <th class="th-totaal">Totaal</th>
+    ${toonDelta ? '<th class="th-laatste">+/-</th>' : ''}
+    ${colLabels.map(l => `<th class="dist-col">${l}</th>`).join('')}
+  </tr></thead>`;
+
+  const tbody = document.createElement('tbody');
+
+  metTotaal.forEach((s, idx) => {
+    const rank  = idx + 1;
+    const stand = rank <= 3
+      ? `<span class="stand-badge stand-${rank}">${rank}</span>`
+      : `<span class="stand-other">${rank}</span>`;
+
+    let positieHtml = '';
+    let deltaHtml   = '';
+    if (toonDelta) {
+      const vorigePos = vorigePositieMap.get(s.id_persoon);
+      if (!vorigePos || (vorigeTotaalMap.get(s.id_persoon) ?? 0) === 0) {
+        positieHtml = `<td class="td-trend"><span class="trend-new">new</span></td>`;
+      } else {
+        const dp = vorigePos - rank;
+        if (dp > 0)      positieHtml = `<td class="td-trend"><span class="trend-up">▲${dp}</span></td>`;
+        else if (dp < 0) positieHtml = `<td class="td-trend"><span class="trend-down">▼${Math.abs(dp)}</span></td>`;
+        else             positieHtml = `<td class="td-trend"><span class="trend-same">—</span></td>`;
+      }
+
+      const vorigTotaal = vorigeTotaalMap.get(s.id_persoon) ?? 0;
+      const delta = Math.max(0, s.totaal - vorigTotaal);
+      deltaHtml = delta > 0.001
+        ? `<td class="td-laatste"><span class="trend-up">+${delta.toFixed(2)}</span></td>`
+        : `<td class="td-laatste leeg">—</td>`;
+    }
+
+    const pogCols = Array.from({ length: nCol }, (_, ci) => {
+      const a = s.afstanden[ci];
+      if (!a || a.waarde === null) return `<td class="td-afstand dist-col leeg">—</td>`;
+      const cls = 'td-afstand dist-col' + (a.telt ? ' telt' : '');
+      return `<td class="${cls}">${a.waarde.toFixed(2)}</td>`;
+    }).join('');
+
+    const totaalTekst = s.totaal > 0 ? s.totaal.toFixed(2) + ' m' : '—';
+    const totaalCls   = 'td-totaal' + (s.totaal > 0 ? '' : ' leeg');
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="td-stand">${stand}</td>
+      ${positieHtml}
+      <td class="td-naam">
+        <span class="naam-tekst">${s.naam}</span>
+        ${s.vereniging ? `<span class="naam-club">${s.vereniging}</span>` : ''}
+      </td>
+      <td class="${totaalCls}">${totaalTekst}</td>
+      ${deltaHtml}
+      ${pogCols}`;
+    tbody.appendChild(tr);
+  });
+
+  tabel.appendChild(tbody);
+  outer.appendChild(tabel);
+  card.appendChild(outer);
+
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  main.appendChild(card);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('id_org')) document.getElementById('bond-select').value = params.get('id_org');
+if (params.get('jaar'))   document.getElementById('jaar-input').value  = params.get('jaar');
+
+document.getElementById('cat-select').addEventListener('change', e => toonCategorie(e.target.value));
+document.getElementById('bond-select').addEventListener('change', laadKlassement);
+document.getElementById('jaar-input').addEventListener('change',  laadKlassement);
+document.getElementById('jaar-input').addEventListener('keydown', e => { if (e.key === 'Enter') laadKlassement(); });
+
+function zetTelaUI(n) {
+  const slider = document.getElementById('tela-slider');
+  slider.max   = aantalKolommen;
+  slider.value = n;
+  // Kleurde track tot aan de thumb
+  const pct = aantalKolommen > 1 ? ((n - 1) / (aantalKolommen - 1)) * 100 : 100;
+  slider.style.background = `linear-gradient(to right, var(--accent) ${pct}%, var(--border2) ${pct}%)`;
+  document.getElementById('tela-val').textContent  = n;
+  document.getElementById('tela-max').textContent  = ` / ${aantalKolommen}`;
+}
+
+document.getElementById('tela-slider').addEventListener('input', function() {
+  const nieuw = parseInt(this.value);
+  if (springersData.length) {
+    zetTelaUI(nieuw);
+    renderKlassement(nieuw);
+  }
+});
+
+laadKlassement();
+</script>
+</body>
+</html>
