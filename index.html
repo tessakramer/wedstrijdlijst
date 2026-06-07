@@ -24,8 +24,10 @@
   header {
     background: var(--bg2); border-bottom: 1px solid var(--border2);
     padding: 0 2rem; display: flex; align-items: center;
-    height: 56px; position: sticky; top: 0; z-index: 100; gap: 16px;
+    height: 56px; gap: 16px;
   }
+
+  #sticky-bar { position: sticky; top: 0; z-index: 100; }
   .logo { font-family: 'Oswald', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.05em; text-transform: uppercase; flex-shrink: 0; }
   .logo span { color: var(--accent); }
   header { transition: background 0.4s; }
@@ -154,7 +156,8 @@
   .toggle-pogingen.actief .toggle-dot { background: var(--accent); }
   .toggle-pogingen.actief .toggle-dot::after { transform: translateX(12px); }
   body.hide-pogingen .td-afstand { display: none; }
-  body.hide-pogingen .springer-table th:not(.ver-header):not(.left):not([style*="padding-left"]) { display: none; }
+  body.hide-pogingen .springer-table th:not(.ver-header):not(.left):not([style*="border-right"]) { display: none; }
+  body.hide-pogingen .table-scroll .springer-table { min-width: 0; }
 
   .state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5rem 2rem; text-align: center; gap: 12px; }
   .state-box .icon { font-size: 32px; opacity: 0.3; }
@@ -246,11 +249,13 @@
   </div>
 </header>
 
-<div class="wedstrijd-title" id="wedstrijd-title">
-  <img class="club-logo hidden" id="club-logo" src="" alt="">
-  <span class="wedstrijd-titel-tekst" id="wedstrijd-titel-tekst"></span>
+<div id="sticky-bar">
+  <div class="wedstrijd-title" id="wedstrijd-title">
+    <img class="club-logo hidden" id="club-logo" src="" alt="">
+    <span class="wedstrijd-titel-tekst" id="wedstrijd-titel-tekst"></span>
+  </div>
+  <div class="ronde-tabs" id="ronde-tabs" style="display:none;"></div>
 </div>
-<div class="ronde-tabs" id="ronde-tabs" style="display:none;"></div>
 
 <main id="main">
   <div class="state-box">
